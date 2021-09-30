@@ -117,9 +117,34 @@ class Riscv:
             self.op = op.__str__()[9:].lower()
 
         def __str__(self) -> str:
-            return "{} ".format(self.op) + Riscv.FMT3.format(
-                str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])
-            )
+            if(self.op == "equ"):
+                return "sub " + Riscv.FMT3.format(
+                    str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                ) + "\n" + "seqz " + Riscv.FMT2.format(
+                    str(self.dsts[0]), str(self.srcs[0])
+                )
+            elif(self.op == "geq"):
+                return "slt " + Riscv.FMT3.format(
+                        str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                    ) + "\n" + "xori " + Riscv.FMT3.format(
+                        str(self.dsts[0]), str(self.srcs[0]), "1"
+                    )
+            elif(self.op == "leq"):
+                return "sgt " + Riscv.FMT3.format(
+                        str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                    ) + "\n" + "xori " + Riscv.FMT3.format(
+                        str(self.dsts[0]), str(self.srcs[0]), "1"
+                    )
+            elif(self.op == "neq"):
+                return "sub " + Riscv.FMT3.format(
+                        str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                    ) + "\n" + "snez " + Riscv.FMT2.format(
+                        str(self.dsts[0]), str(self.srcs[0])
+                    )
+            else:
+                return "{} ".format(self.op) + Riscv.FMT3.format(
+                    str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])
+                )
     
     class Branch(TACInstr):
         def __init__(self, cond: Temp, target: Label) -> None:
