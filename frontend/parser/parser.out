@@ -1,0 +1,3152 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     empty -> <empty>
+Rule 2     program -> function
+Rule 3     type -> Int
+Rule 4     function -> type Identifier LParen RParen LBrace block RBrace
+Rule 5     block -> block block_item
+Rule 6     block -> empty
+Rule 7     block_item -> statement
+Rule 8     block_item -> declaration Semi
+Rule 9     statement -> statement_matched
+Rule 10    statement -> statement_unmatched
+Rule 11    statement_matched -> If LParen expression RParen statement_matched Else statement_matched
+Rule 12    statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched
+Rule 13    statement_unmatched -> If LParen expression RParen statement
+Rule 14    statement_matched -> While LParen expression RParen statement_matched
+Rule 15    statement_unmatched -> While LParen expression RParen statement_unmatched
+Rule 16    statement_matched -> Return expression Semi
+Rule 17    statement_matched -> opt_expression Semi
+Rule 18    statement_matched -> LBrace block RBrace
+Rule 19    statement_matched -> Break Semi
+Rule 20    opt_expression -> expression
+Rule 21    opt_expression -> empty
+Rule 22    declaration -> type Identifier
+Rule 23    declaration -> type Identifier Assign expression
+Rule 24    expression -> assignment
+Rule 25    assignment -> conditional
+Rule 26    conditional -> logical_or
+Rule 27    logical_or -> logical_and
+Rule 28    logical_and -> bit_or
+Rule 29    bit_or -> xor
+Rule 30    xor -> bit_and
+Rule 31    bit_and -> equality
+Rule 32    equality -> relational
+Rule 33    relational -> additive
+Rule 34    additive -> multiplicative
+Rule 35    multiplicative -> unary
+Rule 36    unary -> postfix
+Rule 37    postfix -> primary
+Rule 38    unary -> Minus unary
+Rule 39    unary -> BitNot unary
+Rule 40    unary -> Not unary
+Rule 41    assignment -> Identifier Assign expression
+Rule 42    logical_or -> logical_or Or logical_and
+Rule 43    logical_and -> logical_and And bit_or
+Rule 44    bit_or -> bit_or BitOr xor
+Rule 45    xor -> xor Xor bit_and
+Rule 46    bit_and -> bit_and BitAnd equality
+Rule 47    equality -> equality NotEqual relational
+Rule 48    equality -> equality Equal relational
+Rule 49    relational -> relational Less additive
+Rule 50    relational -> relational Greater additive
+Rule 51    relational -> relational LessEqual additive
+Rule 52    relational -> relational GreaterEqual additive
+Rule 53    additive -> additive Plus multiplicative
+Rule 54    additive -> additive Minus multiplicative
+Rule 55    multiplicative -> multiplicative Mul unary
+Rule 56    multiplicative -> multiplicative Div unary
+Rule 57    multiplicative -> multiplicative Mod unary
+Rule 58    conditional -> logical_or Question expression Colon conditional
+Rule 59    primary -> Integer
+Rule 60    primary -> Identifier
+Rule 61    primary -> LParen expression RParen
+
+Terminals, with rules where they appear
+
+And                  : 43
+Assign               : 23 41
+BitAnd               : 46
+BitNot               : 39
+BitOr                : 44
+Break                : 19
+Colon                : 58
+Div                  : 56
+Else                 : 11 12
+Equal                : 48
+Greater              : 50
+GreaterEqual         : 52
+Identifier           : 4 22 23 41 60
+If                   : 11 12 13
+Int                  : 3
+Integer              : 59
+LBrace               : 4 18
+LParen               : 4 11 12 13 14 15 61
+Less                 : 49
+LessEqual            : 51
+Minus                : 38 54
+Mod                  : 57
+Mul                  : 55
+Not                  : 40
+NotEqual             : 47
+Or                   : 42
+Plus                 : 53
+Question             : 58
+RBrace               : 4 18
+RParen               : 4 11 12 13 14 15 61
+Return               : 16
+Semi                 : 8 16 17 19
+While                : 14 15
+Xor                  : 45
+error                : 
+
+Nonterminals, with rules where they appear
+
+additive             : 33 49 50 51 52 53 54
+assignment           : 24
+bit_and              : 30 45 46
+bit_or               : 28 43 44
+block                : 4 5 18
+block_item           : 5
+conditional          : 25 58
+declaration          : 8
+empty                : 6 21
+equality             : 31 46 47 48
+expression           : 11 12 13 14 15 16 20 23 41 58 61
+function             : 2
+logical_and          : 27 42 43
+logical_or           : 26 42 58
+multiplicative       : 34 53 54 55 56 57
+opt_expression       : 17
+postfix              : 36
+primary              : 37
+program              : 0
+relational           : 32 47 48 49 50 51 52
+statement            : 7 13
+statement_matched    : 9 11 11 12 14
+statement_unmatched  : 10 12 15
+type                 : 4 22 23
+unary                : 35 38 39 40 55 56 57
+xor                  : 29 44 45
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (2) program -> . function
+    (4) function -> . type Identifier LParen RParen LBrace block RBrace
+    (3) type -> . Int
+
+    Int             shift and go to state 4
+
+    program                        shift and go to state 1
+    function                       shift and go to state 2
+    type                           shift and go to state 3
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (2) program -> function .
+
+    $end            reduce using rule 2 (program -> function .)
+
+
+state 3
+
+    (4) function -> type . Identifier LParen RParen LBrace block RBrace
+
+    Identifier      shift and go to state 5
+
+
+state 4
+
+    (3) type -> Int .
+
+    Identifier      reduce using rule 3 (type -> Int .)
+
+
+state 5
+
+    (4) function -> type Identifier . LParen RParen LBrace block RBrace
+
+    LParen          shift and go to state 6
+
+
+state 6
+
+    (4) function -> type Identifier LParen . RParen LBrace block RBrace
+
+    RParen          shift and go to state 7
+
+
+state 7
+
+    (4) function -> type Identifier LParen RParen . LBrace block RBrace
+
+    LBrace          shift and go to state 8
+
+
+state 8
+
+    (4) function -> type Identifier LParen RParen LBrace . block RBrace
+    (5) block -> . block block_item
+    (6) block -> . empty
+    (1) empty -> .
+
+    RBrace          reduce using rule 1 (empty -> .)
+    If              reduce using rule 1 (empty -> .)
+    While           reduce using rule 1 (empty -> .)
+    Return          reduce using rule 1 (empty -> .)
+    LBrace          reduce using rule 1 (empty -> .)
+    Break           reduce using rule 1 (empty -> .)
+    Int             reduce using rule 1 (empty -> .)
+    Identifier      reduce using rule 1 (empty -> .)
+    Minus           reduce using rule 1 (empty -> .)
+    BitNot          reduce using rule 1 (empty -> .)
+    Not             reduce using rule 1 (empty -> .)
+    Integer         reduce using rule 1 (empty -> .)
+    LParen          reduce using rule 1 (empty -> .)
+    Semi            reduce using rule 1 (empty -> .)
+
+    block                          shift and go to state 9
+    empty                          shift and go to state 10
+
+state 9
+
+    (4) function -> type Identifier LParen RParen LBrace block . RBrace
+    (5) block -> block . block_item
+    (7) block_item -> . statement
+    (8) block_item -> . declaration Semi
+    (9) statement -> . statement_matched
+    (10) statement -> . statement_unmatched
+    (22) declaration -> . type Identifier
+    (23) declaration -> . type Identifier Assign expression
+    (11) statement_matched -> . If LParen expression RParen statement_matched Else statement_matched
+    (14) statement_matched -> . While LParen expression RParen statement_matched
+    (16) statement_matched -> . Return expression Semi
+    (17) statement_matched -> . opt_expression Semi
+    (18) statement_matched -> . LBrace block RBrace
+    (19) statement_matched -> . Break Semi
+    (12) statement_unmatched -> . If LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> . If LParen expression RParen statement
+    (15) statement_unmatched -> . While LParen expression RParen statement_unmatched
+    (3) type -> . Int
+    (20) opt_expression -> . expression
+    (21) opt_expression -> . empty
+    (24) expression -> . assignment
+    (1) empty -> .
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    RBrace          shift and go to state 15
+    If              shift and go to state 22
+    While           shift and go to state 23
+    Return          shift and go to state 24
+    LBrace          shift and go to state 14
+    Break           shift and go to state 26
+    Int             shift and go to state 4
+    Semi            reduce using rule 1 (empty -> .)
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    type                           shift and go to state 11
+    block_item                     shift and go to state 16
+    statement                      shift and go to state 17
+    declaration                    shift and go to state 18
+    statement_matched              shift and go to state 19
+    statement_unmatched            shift and go to state 20
+    expression                     shift and go to state 21
+    opt_expression                 shift and go to state 25
+    empty                          shift and go to state 27
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 10
+
+    (6) block -> empty .
+
+    RBrace          reduce using rule 6 (block -> empty .)
+    If              reduce using rule 6 (block -> empty .)
+    While           reduce using rule 6 (block -> empty .)
+    Return          reduce using rule 6 (block -> empty .)
+    LBrace          reduce using rule 6 (block -> empty .)
+    Break           reduce using rule 6 (block -> empty .)
+    Int             reduce using rule 6 (block -> empty .)
+    Identifier      reduce using rule 6 (block -> empty .)
+    Minus           reduce using rule 6 (block -> empty .)
+    BitNot          reduce using rule 6 (block -> empty .)
+    Not             reduce using rule 6 (block -> empty .)
+    Integer         reduce using rule 6 (block -> empty .)
+    LParen          reduce using rule 6 (block -> empty .)
+    Semi            reduce using rule 6 (block -> empty .)
+
+
+state 11
+
+    (22) declaration -> type . Identifier
+    (23) declaration -> type . Identifier Assign expression
+
+    Identifier      shift and go to state 46
+
+
+state 12
+
+    (41) assignment -> Identifier . Assign expression
+    (60) primary -> Identifier .
+
+    Assign          shift and go to state 47
+    Mul             reduce using rule 60 (primary -> Identifier .)
+    Div             reduce using rule 60 (primary -> Identifier .)
+    Mod             reduce using rule 60 (primary -> Identifier .)
+    Plus            reduce using rule 60 (primary -> Identifier .)
+    Minus           reduce using rule 60 (primary -> Identifier .)
+    Less            reduce using rule 60 (primary -> Identifier .)
+    Greater         reduce using rule 60 (primary -> Identifier .)
+    LessEqual       reduce using rule 60 (primary -> Identifier .)
+    GreaterEqual    reduce using rule 60 (primary -> Identifier .)
+    NotEqual        reduce using rule 60 (primary -> Identifier .)
+    Equal           reduce using rule 60 (primary -> Identifier .)
+    BitAnd          reduce using rule 60 (primary -> Identifier .)
+    Xor             reduce using rule 60 (primary -> Identifier .)
+    BitOr           reduce using rule 60 (primary -> Identifier .)
+    And             reduce using rule 60 (primary -> Identifier .)
+    Question        reduce using rule 60 (primary -> Identifier .)
+    Or              reduce using rule 60 (primary -> Identifier .)
+    Semi            reduce using rule 60 (primary -> Identifier .)
+    RParen          reduce using rule 60 (primary -> Identifier .)
+    Colon           reduce using rule 60 (primary -> Identifier .)
+
+
+state 13
+
+    (61) primary -> LParen . expression RParen
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 48
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 14
+
+    (18) statement_matched -> LBrace . block RBrace
+    (5) block -> . block block_item
+    (6) block -> . empty
+    (1) empty -> .
+
+    RBrace          reduce using rule 1 (empty -> .)
+    If              reduce using rule 1 (empty -> .)
+    While           reduce using rule 1 (empty -> .)
+    Return          reduce using rule 1 (empty -> .)
+    LBrace          reduce using rule 1 (empty -> .)
+    Break           reduce using rule 1 (empty -> .)
+    Int             reduce using rule 1 (empty -> .)
+    Identifier      reduce using rule 1 (empty -> .)
+    Minus           reduce using rule 1 (empty -> .)
+    BitNot          reduce using rule 1 (empty -> .)
+    Not             reduce using rule 1 (empty -> .)
+    Integer         reduce using rule 1 (empty -> .)
+    LParen          reduce using rule 1 (empty -> .)
+    Semi            reduce using rule 1 (empty -> .)
+
+    block                          shift and go to state 49
+    empty                          shift and go to state 10
+
+state 15
+
+    (4) function -> type Identifier LParen RParen LBrace block RBrace .
+
+    $end            reduce using rule 4 (function -> type Identifier LParen RParen LBrace block RBrace .)
+
+
+state 16
+
+    (5) block -> block block_item .
+
+    RBrace          reduce using rule 5 (block -> block block_item .)
+    If              reduce using rule 5 (block -> block block_item .)
+    While           reduce using rule 5 (block -> block block_item .)
+    Return          reduce using rule 5 (block -> block block_item .)
+    LBrace          reduce using rule 5 (block -> block block_item .)
+    Break           reduce using rule 5 (block -> block block_item .)
+    Int             reduce using rule 5 (block -> block block_item .)
+    Identifier      reduce using rule 5 (block -> block block_item .)
+    Minus           reduce using rule 5 (block -> block block_item .)
+    BitNot          reduce using rule 5 (block -> block block_item .)
+    Not             reduce using rule 5 (block -> block block_item .)
+    Integer         reduce using rule 5 (block -> block block_item .)
+    LParen          reduce using rule 5 (block -> block block_item .)
+    Semi            reduce using rule 5 (block -> block block_item .)
+
+
+state 17
+
+    (7) block_item -> statement .
+
+    RBrace          reduce using rule 7 (block_item -> statement .)
+    If              reduce using rule 7 (block_item -> statement .)
+    While           reduce using rule 7 (block_item -> statement .)
+    Return          reduce using rule 7 (block_item -> statement .)
+    LBrace          reduce using rule 7 (block_item -> statement .)
+    Break           reduce using rule 7 (block_item -> statement .)
+    Int             reduce using rule 7 (block_item -> statement .)
+    Identifier      reduce using rule 7 (block_item -> statement .)
+    Minus           reduce using rule 7 (block_item -> statement .)
+    BitNot          reduce using rule 7 (block_item -> statement .)
+    Not             reduce using rule 7 (block_item -> statement .)
+    Integer         reduce using rule 7 (block_item -> statement .)
+    LParen          reduce using rule 7 (block_item -> statement .)
+    Semi            reduce using rule 7 (block_item -> statement .)
+
+
+state 18
+
+    (8) block_item -> declaration . Semi
+
+    Semi            shift and go to state 50
+
+
+state 19
+
+    (9) statement -> statement_matched .
+
+    RBrace          reduce using rule 9 (statement -> statement_matched .)
+    If              reduce using rule 9 (statement -> statement_matched .)
+    While           reduce using rule 9 (statement -> statement_matched .)
+    Return          reduce using rule 9 (statement -> statement_matched .)
+    LBrace          reduce using rule 9 (statement -> statement_matched .)
+    Break           reduce using rule 9 (statement -> statement_matched .)
+    Int             reduce using rule 9 (statement -> statement_matched .)
+    Identifier      reduce using rule 9 (statement -> statement_matched .)
+    Minus           reduce using rule 9 (statement -> statement_matched .)
+    BitNot          reduce using rule 9 (statement -> statement_matched .)
+    Not             reduce using rule 9 (statement -> statement_matched .)
+    Integer         reduce using rule 9 (statement -> statement_matched .)
+    LParen          reduce using rule 9 (statement -> statement_matched .)
+    Semi            reduce using rule 9 (statement -> statement_matched .)
+
+
+state 20
+
+    (10) statement -> statement_unmatched .
+
+    RBrace          reduce using rule 10 (statement -> statement_unmatched .)
+    If              reduce using rule 10 (statement -> statement_unmatched .)
+    While           reduce using rule 10 (statement -> statement_unmatched .)
+    Return          reduce using rule 10 (statement -> statement_unmatched .)
+    LBrace          reduce using rule 10 (statement -> statement_unmatched .)
+    Break           reduce using rule 10 (statement -> statement_unmatched .)
+    Int             reduce using rule 10 (statement -> statement_unmatched .)
+    Identifier      reduce using rule 10 (statement -> statement_unmatched .)
+    Minus           reduce using rule 10 (statement -> statement_unmatched .)
+    BitNot          reduce using rule 10 (statement -> statement_unmatched .)
+    Not             reduce using rule 10 (statement -> statement_unmatched .)
+    Integer         reduce using rule 10 (statement -> statement_unmatched .)
+    LParen          reduce using rule 10 (statement -> statement_unmatched .)
+    Semi            reduce using rule 10 (statement -> statement_unmatched .)
+
+
+state 21
+
+    (20) opt_expression -> expression .
+
+    Semi            reduce using rule 20 (opt_expression -> expression .)
+
+
+state 22
+
+    (11) statement_matched -> If . LParen expression RParen statement_matched Else statement_matched
+    (12) statement_unmatched -> If . LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> If . LParen expression RParen statement
+
+    LParen          shift and go to state 51
+
+
+state 23
+
+    (14) statement_matched -> While . LParen expression RParen statement_matched
+    (15) statement_unmatched -> While . LParen expression RParen statement_unmatched
+
+    LParen          shift and go to state 52
+
+
+state 24
+
+    (16) statement_matched -> Return . expression Semi
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 53
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 25
+
+    (17) statement_matched -> opt_expression . Semi
+
+    Semi            shift and go to state 54
+
+
+state 26
+
+    (19) statement_matched -> Break . Semi
+
+    Semi            shift and go to state 55
+
+
+state 27
+
+    (21) opt_expression -> empty .
+
+    Semi            reduce using rule 21 (opt_expression -> empty .)
+
+
+state 28
+
+    (24) expression -> assignment .
+
+    Semi            reduce using rule 24 (expression -> assignment .)
+    RParen          reduce using rule 24 (expression -> assignment .)
+    Colon           reduce using rule 24 (expression -> assignment .)
+
+
+state 29
+
+    (25) assignment -> conditional .
+
+    Semi            reduce using rule 25 (assignment -> conditional .)
+    RParen          reduce using rule 25 (assignment -> conditional .)
+    Colon           reduce using rule 25 (assignment -> conditional .)
+
+
+state 30
+
+    (26) conditional -> logical_or .
+    (58) conditional -> logical_or . Question expression Colon conditional
+    (42) logical_or -> logical_or . Or logical_and
+
+    Semi            reduce using rule 26 (conditional -> logical_or .)
+    RParen          reduce using rule 26 (conditional -> logical_or .)
+    Colon           reduce using rule 26 (conditional -> logical_or .)
+    Question        shift and go to state 56
+    Or              shift and go to state 57
+
+
+state 31
+
+    (27) logical_or -> logical_and .
+    (43) logical_and -> logical_and . And bit_or
+
+    Question        reduce using rule 27 (logical_or -> logical_and .)
+    Or              reduce using rule 27 (logical_or -> logical_and .)
+    Semi            reduce using rule 27 (logical_or -> logical_and .)
+    RParen          reduce using rule 27 (logical_or -> logical_and .)
+    Colon           reduce using rule 27 (logical_or -> logical_and .)
+    And             shift and go to state 58
+
+
+state 32
+
+    (28) logical_and -> bit_or .
+    (44) bit_or -> bit_or . BitOr xor
+
+    And             reduce using rule 28 (logical_and -> bit_or .)
+    Question        reduce using rule 28 (logical_and -> bit_or .)
+    Or              reduce using rule 28 (logical_and -> bit_or .)
+    Semi            reduce using rule 28 (logical_and -> bit_or .)
+    RParen          reduce using rule 28 (logical_and -> bit_or .)
+    Colon           reduce using rule 28 (logical_and -> bit_or .)
+    BitOr           shift and go to state 59
+
+
+state 33
+
+    (29) bit_or -> xor .
+    (45) xor -> xor . Xor bit_and
+
+    BitOr           reduce using rule 29 (bit_or -> xor .)
+    And             reduce using rule 29 (bit_or -> xor .)
+    Question        reduce using rule 29 (bit_or -> xor .)
+    Or              reduce using rule 29 (bit_or -> xor .)
+    Semi            reduce using rule 29 (bit_or -> xor .)
+    RParen          reduce using rule 29 (bit_or -> xor .)
+    Colon           reduce using rule 29 (bit_or -> xor .)
+    Xor             shift and go to state 60
+
+
+state 34
+
+    (30) xor -> bit_and .
+    (46) bit_and -> bit_and . BitAnd equality
+
+    Xor             reduce using rule 30 (xor -> bit_and .)
+    BitOr           reduce using rule 30 (xor -> bit_and .)
+    And             reduce using rule 30 (xor -> bit_and .)
+    Question        reduce using rule 30 (xor -> bit_and .)
+    Or              reduce using rule 30 (xor -> bit_and .)
+    Semi            reduce using rule 30 (xor -> bit_and .)
+    RParen          reduce using rule 30 (xor -> bit_and .)
+    Colon           reduce using rule 30 (xor -> bit_and .)
+    BitAnd          shift and go to state 61
+
+
+state 35
+
+    (31) bit_and -> equality .
+    (47) equality -> equality . NotEqual relational
+    (48) equality -> equality . Equal relational
+
+    BitAnd          reduce using rule 31 (bit_and -> equality .)
+    Xor             reduce using rule 31 (bit_and -> equality .)
+    BitOr           reduce using rule 31 (bit_and -> equality .)
+    And             reduce using rule 31 (bit_and -> equality .)
+    Question        reduce using rule 31 (bit_and -> equality .)
+    Or              reduce using rule 31 (bit_and -> equality .)
+    Semi            reduce using rule 31 (bit_and -> equality .)
+    RParen          reduce using rule 31 (bit_and -> equality .)
+    Colon           reduce using rule 31 (bit_and -> equality .)
+    NotEqual        shift and go to state 62
+    Equal           shift and go to state 63
+
+
+state 36
+
+    (32) equality -> relational .
+    (49) relational -> relational . Less additive
+    (50) relational -> relational . Greater additive
+    (51) relational -> relational . LessEqual additive
+    (52) relational -> relational . GreaterEqual additive
+
+    NotEqual        reduce using rule 32 (equality -> relational .)
+    Equal           reduce using rule 32 (equality -> relational .)
+    BitAnd          reduce using rule 32 (equality -> relational .)
+    Xor             reduce using rule 32 (equality -> relational .)
+    BitOr           reduce using rule 32 (equality -> relational .)
+    And             reduce using rule 32 (equality -> relational .)
+    Question        reduce using rule 32 (equality -> relational .)
+    Or              reduce using rule 32 (equality -> relational .)
+    Semi            reduce using rule 32 (equality -> relational .)
+    RParen          reduce using rule 32 (equality -> relational .)
+    Colon           reduce using rule 32 (equality -> relational .)
+    Less            shift and go to state 64
+    Greater         shift and go to state 65
+    LessEqual       shift and go to state 66
+    GreaterEqual    shift and go to state 67
+
+
+state 37
+
+    (33) relational -> additive .
+    (53) additive -> additive . Plus multiplicative
+    (54) additive -> additive . Minus multiplicative
+
+    Less            reduce using rule 33 (relational -> additive .)
+    Greater         reduce using rule 33 (relational -> additive .)
+    LessEqual       reduce using rule 33 (relational -> additive .)
+    GreaterEqual    reduce using rule 33 (relational -> additive .)
+    NotEqual        reduce using rule 33 (relational -> additive .)
+    Equal           reduce using rule 33 (relational -> additive .)
+    BitAnd          reduce using rule 33 (relational -> additive .)
+    Xor             reduce using rule 33 (relational -> additive .)
+    BitOr           reduce using rule 33 (relational -> additive .)
+    And             reduce using rule 33 (relational -> additive .)
+    Question        reduce using rule 33 (relational -> additive .)
+    Or              reduce using rule 33 (relational -> additive .)
+    Semi            reduce using rule 33 (relational -> additive .)
+    RParen          reduce using rule 33 (relational -> additive .)
+    Colon           reduce using rule 33 (relational -> additive .)
+    Plus            shift and go to state 68
+    Minus           shift and go to state 69
+
+
+state 38
+
+    (34) additive -> multiplicative .
+    (55) multiplicative -> multiplicative . Mul unary
+    (56) multiplicative -> multiplicative . Div unary
+    (57) multiplicative -> multiplicative . Mod unary
+
+    Plus            reduce using rule 34 (additive -> multiplicative .)
+    Minus           reduce using rule 34 (additive -> multiplicative .)
+    Less            reduce using rule 34 (additive -> multiplicative .)
+    Greater         reduce using rule 34 (additive -> multiplicative .)
+    LessEqual       reduce using rule 34 (additive -> multiplicative .)
+    GreaterEqual    reduce using rule 34 (additive -> multiplicative .)
+    NotEqual        reduce using rule 34 (additive -> multiplicative .)
+    Equal           reduce using rule 34 (additive -> multiplicative .)
+    BitAnd          reduce using rule 34 (additive -> multiplicative .)
+    Xor             reduce using rule 34 (additive -> multiplicative .)
+    BitOr           reduce using rule 34 (additive -> multiplicative .)
+    And             reduce using rule 34 (additive -> multiplicative .)
+    Question        reduce using rule 34 (additive -> multiplicative .)
+    Or              reduce using rule 34 (additive -> multiplicative .)
+    Semi            reduce using rule 34 (additive -> multiplicative .)
+    RParen          reduce using rule 34 (additive -> multiplicative .)
+    Colon           reduce using rule 34 (additive -> multiplicative .)
+    Mul             shift and go to state 70
+    Div             shift and go to state 71
+    Mod             shift and go to state 72
+
+
+state 39
+
+    (38) unary -> Minus . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 73
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 40
+
+    (35) multiplicative -> unary .
+
+    Mul             reduce using rule 35 (multiplicative -> unary .)
+    Div             reduce using rule 35 (multiplicative -> unary .)
+    Mod             reduce using rule 35 (multiplicative -> unary .)
+    Plus            reduce using rule 35 (multiplicative -> unary .)
+    Minus           reduce using rule 35 (multiplicative -> unary .)
+    Less            reduce using rule 35 (multiplicative -> unary .)
+    Greater         reduce using rule 35 (multiplicative -> unary .)
+    LessEqual       reduce using rule 35 (multiplicative -> unary .)
+    GreaterEqual    reduce using rule 35 (multiplicative -> unary .)
+    NotEqual        reduce using rule 35 (multiplicative -> unary .)
+    Equal           reduce using rule 35 (multiplicative -> unary .)
+    BitAnd          reduce using rule 35 (multiplicative -> unary .)
+    Xor             reduce using rule 35 (multiplicative -> unary .)
+    BitOr           reduce using rule 35 (multiplicative -> unary .)
+    And             reduce using rule 35 (multiplicative -> unary .)
+    Question        reduce using rule 35 (multiplicative -> unary .)
+    Or              reduce using rule 35 (multiplicative -> unary .)
+    Semi            reduce using rule 35 (multiplicative -> unary .)
+    RParen          reduce using rule 35 (multiplicative -> unary .)
+    Colon           reduce using rule 35 (multiplicative -> unary .)
+
+
+state 41
+
+    (36) unary -> postfix .
+
+    Mul             reduce using rule 36 (unary -> postfix .)
+    Div             reduce using rule 36 (unary -> postfix .)
+    Mod             reduce using rule 36 (unary -> postfix .)
+    Plus            reduce using rule 36 (unary -> postfix .)
+    Minus           reduce using rule 36 (unary -> postfix .)
+    Less            reduce using rule 36 (unary -> postfix .)
+    Greater         reduce using rule 36 (unary -> postfix .)
+    LessEqual       reduce using rule 36 (unary -> postfix .)
+    GreaterEqual    reduce using rule 36 (unary -> postfix .)
+    NotEqual        reduce using rule 36 (unary -> postfix .)
+    Equal           reduce using rule 36 (unary -> postfix .)
+    BitAnd          reduce using rule 36 (unary -> postfix .)
+    Xor             reduce using rule 36 (unary -> postfix .)
+    BitOr           reduce using rule 36 (unary -> postfix .)
+    And             reduce using rule 36 (unary -> postfix .)
+    Question        reduce using rule 36 (unary -> postfix .)
+    Or              reduce using rule 36 (unary -> postfix .)
+    Semi            reduce using rule 36 (unary -> postfix .)
+    RParen          reduce using rule 36 (unary -> postfix .)
+    Colon           reduce using rule 36 (unary -> postfix .)
+
+
+state 42
+
+    (39) unary -> BitNot . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 75
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 43
+
+    (40) unary -> Not . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 76
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 44
+
+    (37) postfix -> primary .
+
+    Mul             reduce using rule 37 (postfix -> primary .)
+    Div             reduce using rule 37 (postfix -> primary .)
+    Mod             reduce using rule 37 (postfix -> primary .)
+    Plus            reduce using rule 37 (postfix -> primary .)
+    Minus           reduce using rule 37 (postfix -> primary .)
+    Less            reduce using rule 37 (postfix -> primary .)
+    Greater         reduce using rule 37 (postfix -> primary .)
+    LessEqual       reduce using rule 37 (postfix -> primary .)
+    GreaterEqual    reduce using rule 37 (postfix -> primary .)
+    NotEqual        reduce using rule 37 (postfix -> primary .)
+    Equal           reduce using rule 37 (postfix -> primary .)
+    BitAnd          reduce using rule 37 (postfix -> primary .)
+    Xor             reduce using rule 37 (postfix -> primary .)
+    BitOr           reduce using rule 37 (postfix -> primary .)
+    And             reduce using rule 37 (postfix -> primary .)
+    Question        reduce using rule 37 (postfix -> primary .)
+    Or              reduce using rule 37 (postfix -> primary .)
+    Semi            reduce using rule 37 (postfix -> primary .)
+    RParen          reduce using rule 37 (postfix -> primary .)
+    Colon           reduce using rule 37 (postfix -> primary .)
+
+
+state 45
+
+    (59) primary -> Integer .
+
+    Mul             reduce using rule 59 (primary -> Integer .)
+    Div             reduce using rule 59 (primary -> Integer .)
+    Mod             reduce using rule 59 (primary -> Integer .)
+    Plus            reduce using rule 59 (primary -> Integer .)
+    Minus           reduce using rule 59 (primary -> Integer .)
+    Less            reduce using rule 59 (primary -> Integer .)
+    Greater         reduce using rule 59 (primary -> Integer .)
+    LessEqual       reduce using rule 59 (primary -> Integer .)
+    GreaterEqual    reduce using rule 59 (primary -> Integer .)
+    NotEqual        reduce using rule 59 (primary -> Integer .)
+    Equal           reduce using rule 59 (primary -> Integer .)
+    BitAnd          reduce using rule 59 (primary -> Integer .)
+    Xor             reduce using rule 59 (primary -> Integer .)
+    BitOr           reduce using rule 59 (primary -> Integer .)
+    And             reduce using rule 59 (primary -> Integer .)
+    Question        reduce using rule 59 (primary -> Integer .)
+    Or              reduce using rule 59 (primary -> Integer .)
+    Semi            reduce using rule 59 (primary -> Integer .)
+    RParen          reduce using rule 59 (primary -> Integer .)
+    Colon           reduce using rule 59 (primary -> Integer .)
+
+
+state 46
+
+    (22) declaration -> type Identifier .
+    (23) declaration -> type Identifier . Assign expression
+
+    Semi            reduce using rule 22 (declaration -> type Identifier .)
+    Assign          shift and go to state 77
+
+
+state 47
+
+    (41) assignment -> Identifier Assign . expression
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 78
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 48
+
+    (61) primary -> LParen expression . RParen
+
+    RParen          shift and go to state 79
+
+
+state 49
+
+    (18) statement_matched -> LBrace block . RBrace
+    (5) block -> block . block_item
+    (7) block_item -> . statement
+    (8) block_item -> . declaration Semi
+    (9) statement -> . statement_matched
+    (10) statement -> . statement_unmatched
+    (22) declaration -> . type Identifier
+    (23) declaration -> . type Identifier Assign expression
+    (11) statement_matched -> . If LParen expression RParen statement_matched Else statement_matched
+    (14) statement_matched -> . While LParen expression RParen statement_matched
+    (16) statement_matched -> . Return expression Semi
+    (17) statement_matched -> . opt_expression Semi
+    (18) statement_matched -> . LBrace block RBrace
+    (19) statement_matched -> . Break Semi
+    (12) statement_unmatched -> . If LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> . If LParen expression RParen statement
+    (15) statement_unmatched -> . While LParen expression RParen statement_unmatched
+    (3) type -> . Int
+    (20) opt_expression -> . expression
+    (21) opt_expression -> . empty
+    (24) expression -> . assignment
+    (1) empty -> .
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    RBrace          shift and go to state 80
+    If              shift and go to state 22
+    While           shift and go to state 23
+    Return          shift and go to state 24
+    LBrace          shift and go to state 14
+    Break           shift and go to state 26
+    Int             shift and go to state 4
+    Semi            reduce using rule 1 (empty -> .)
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    block_item                     shift and go to state 16
+    statement                      shift and go to state 17
+    declaration                    shift and go to state 18
+    statement_matched              shift and go to state 19
+    statement_unmatched            shift and go to state 20
+    type                           shift and go to state 11
+    expression                     shift and go to state 21
+    opt_expression                 shift and go to state 25
+    empty                          shift and go to state 27
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 50
+
+    (8) block_item -> declaration Semi .
+
+    RBrace          reduce using rule 8 (block_item -> declaration Semi .)
+    If              reduce using rule 8 (block_item -> declaration Semi .)
+    While           reduce using rule 8 (block_item -> declaration Semi .)
+    Return          reduce using rule 8 (block_item -> declaration Semi .)
+    LBrace          reduce using rule 8 (block_item -> declaration Semi .)
+    Break           reduce using rule 8 (block_item -> declaration Semi .)
+    Int             reduce using rule 8 (block_item -> declaration Semi .)
+    Identifier      reduce using rule 8 (block_item -> declaration Semi .)
+    Minus           reduce using rule 8 (block_item -> declaration Semi .)
+    BitNot          reduce using rule 8 (block_item -> declaration Semi .)
+    Not             reduce using rule 8 (block_item -> declaration Semi .)
+    Integer         reduce using rule 8 (block_item -> declaration Semi .)
+    LParen          reduce using rule 8 (block_item -> declaration Semi .)
+    Semi            reduce using rule 8 (block_item -> declaration Semi .)
+
+
+state 51
+
+    (11) statement_matched -> If LParen . expression RParen statement_matched Else statement_matched
+    (12) statement_unmatched -> If LParen . expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> If LParen . expression RParen statement
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 81
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 52
+
+    (14) statement_matched -> While LParen . expression RParen statement_matched
+    (15) statement_unmatched -> While LParen . expression RParen statement_unmatched
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 82
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 53
+
+    (16) statement_matched -> Return expression . Semi
+
+    Semi            shift and go to state 83
+
+
+state 54
+
+    (17) statement_matched -> opt_expression Semi .
+
+    RBrace          reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    If              reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    While           reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Return          reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    LBrace          reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Break           reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Int             reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Identifier      reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Minus           reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    BitNot          reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Not             reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Integer         reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    LParen          reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Semi            reduce using rule 17 (statement_matched -> opt_expression Semi .)
+    Else            reduce using rule 17 (statement_matched -> opt_expression Semi .)
+
+
+state 55
+
+    (19) statement_matched -> Break Semi .
+
+    RBrace          reduce using rule 19 (statement_matched -> Break Semi .)
+    If              reduce using rule 19 (statement_matched -> Break Semi .)
+    While           reduce using rule 19 (statement_matched -> Break Semi .)
+    Return          reduce using rule 19 (statement_matched -> Break Semi .)
+    LBrace          reduce using rule 19 (statement_matched -> Break Semi .)
+    Break           reduce using rule 19 (statement_matched -> Break Semi .)
+    Int             reduce using rule 19 (statement_matched -> Break Semi .)
+    Identifier      reduce using rule 19 (statement_matched -> Break Semi .)
+    Minus           reduce using rule 19 (statement_matched -> Break Semi .)
+    BitNot          reduce using rule 19 (statement_matched -> Break Semi .)
+    Not             reduce using rule 19 (statement_matched -> Break Semi .)
+    Integer         reduce using rule 19 (statement_matched -> Break Semi .)
+    LParen          reduce using rule 19 (statement_matched -> Break Semi .)
+    Semi            reduce using rule 19 (statement_matched -> Break Semi .)
+    Else            reduce using rule 19 (statement_matched -> Break Semi .)
+
+
+state 56
+
+    (58) conditional -> logical_or Question . expression Colon conditional
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    logical_or                     shift and go to state 30
+    expression                     shift and go to state 84
+    conditional                    shift and go to state 29
+    assignment                     shift and go to state 28
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 57
+
+    (42) logical_or -> logical_or Or . logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    logical_and                    shift and go to state 85
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 58
+
+    (43) logical_and -> logical_and And . bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    bit_or                         shift and go to state 86
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 59
+
+    (44) bit_or -> bit_or BitOr . xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    xor                            shift and go to state 87
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 60
+
+    (45) xor -> xor Xor . bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    bit_and                        shift and go to state 88
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 61
+
+    (46) bit_and -> bit_and BitAnd . equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    equality                       shift and go to state 89
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 62
+
+    (47) equality -> equality NotEqual . relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    relational                     shift and go to state 90
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 63
+
+    (48) equality -> equality Equal . relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    relational                     shift and go to state 91
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 64
+
+    (49) relational -> relational Less . additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    additive                       shift and go to state 92
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 65
+
+    (50) relational -> relational Greater . additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    additive                       shift and go to state 93
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 66
+
+    (51) relational -> relational LessEqual . additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    additive                       shift and go to state 94
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 67
+
+    (52) relational -> relational GreaterEqual . additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    additive                       shift and go to state 95
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 68
+
+    (53) additive -> additive Plus . multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    multiplicative                 shift and go to state 96
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 69
+
+    (54) additive -> additive Minus . multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    multiplicative                 shift and go to state 97
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 70
+
+    (55) multiplicative -> multiplicative Mul . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 98
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 71
+
+    (56) multiplicative -> multiplicative Div . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 99
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 72
+
+    (57) multiplicative -> multiplicative Mod . unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    unary                          shift and go to state 100
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 73
+
+    (38) unary -> Minus unary .
+
+    Mul             reduce using rule 38 (unary -> Minus unary .)
+    Div             reduce using rule 38 (unary -> Minus unary .)
+    Mod             reduce using rule 38 (unary -> Minus unary .)
+    Plus            reduce using rule 38 (unary -> Minus unary .)
+    Minus           reduce using rule 38 (unary -> Minus unary .)
+    Less            reduce using rule 38 (unary -> Minus unary .)
+    Greater         reduce using rule 38 (unary -> Minus unary .)
+    LessEqual       reduce using rule 38 (unary -> Minus unary .)
+    GreaterEqual    reduce using rule 38 (unary -> Minus unary .)
+    NotEqual        reduce using rule 38 (unary -> Minus unary .)
+    Equal           reduce using rule 38 (unary -> Minus unary .)
+    BitAnd          reduce using rule 38 (unary -> Minus unary .)
+    Xor             reduce using rule 38 (unary -> Minus unary .)
+    BitOr           reduce using rule 38 (unary -> Minus unary .)
+    And             reduce using rule 38 (unary -> Minus unary .)
+    Question        reduce using rule 38 (unary -> Minus unary .)
+    Or              reduce using rule 38 (unary -> Minus unary .)
+    Semi            reduce using rule 38 (unary -> Minus unary .)
+    RParen          reduce using rule 38 (unary -> Minus unary .)
+    Colon           reduce using rule 38 (unary -> Minus unary .)
+
+
+state 74
+
+    (60) primary -> Identifier .
+
+    Mul             reduce using rule 60 (primary -> Identifier .)
+    Div             reduce using rule 60 (primary -> Identifier .)
+    Mod             reduce using rule 60 (primary -> Identifier .)
+    Plus            reduce using rule 60 (primary -> Identifier .)
+    Minus           reduce using rule 60 (primary -> Identifier .)
+    Less            reduce using rule 60 (primary -> Identifier .)
+    Greater         reduce using rule 60 (primary -> Identifier .)
+    LessEqual       reduce using rule 60 (primary -> Identifier .)
+    GreaterEqual    reduce using rule 60 (primary -> Identifier .)
+    NotEqual        reduce using rule 60 (primary -> Identifier .)
+    Equal           reduce using rule 60 (primary -> Identifier .)
+    BitAnd          reduce using rule 60 (primary -> Identifier .)
+    Xor             reduce using rule 60 (primary -> Identifier .)
+    BitOr           reduce using rule 60 (primary -> Identifier .)
+    And             reduce using rule 60 (primary -> Identifier .)
+    Question        reduce using rule 60 (primary -> Identifier .)
+    Or              reduce using rule 60 (primary -> Identifier .)
+    Semi            reduce using rule 60 (primary -> Identifier .)
+    RParen          reduce using rule 60 (primary -> Identifier .)
+    Colon           reduce using rule 60 (primary -> Identifier .)
+
+
+state 75
+
+    (39) unary -> BitNot unary .
+
+    Mul             reduce using rule 39 (unary -> BitNot unary .)
+    Div             reduce using rule 39 (unary -> BitNot unary .)
+    Mod             reduce using rule 39 (unary -> BitNot unary .)
+    Plus            reduce using rule 39 (unary -> BitNot unary .)
+    Minus           reduce using rule 39 (unary -> BitNot unary .)
+    Less            reduce using rule 39 (unary -> BitNot unary .)
+    Greater         reduce using rule 39 (unary -> BitNot unary .)
+    LessEqual       reduce using rule 39 (unary -> BitNot unary .)
+    GreaterEqual    reduce using rule 39 (unary -> BitNot unary .)
+    NotEqual        reduce using rule 39 (unary -> BitNot unary .)
+    Equal           reduce using rule 39 (unary -> BitNot unary .)
+    BitAnd          reduce using rule 39 (unary -> BitNot unary .)
+    Xor             reduce using rule 39 (unary -> BitNot unary .)
+    BitOr           reduce using rule 39 (unary -> BitNot unary .)
+    And             reduce using rule 39 (unary -> BitNot unary .)
+    Question        reduce using rule 39 (unary -> BitNot unary .)
+    Or              reduce using rule 39 (unary -> BitNot unary .)
+    Semi            reduce using rule 39 (unary -> BitNot unary .)
+    RParen          reduce using rule 39 (unary -> BitNot unary .)
+    Colon           reduce using rule 39 (unary -> BitNot unary .)
+
+
+state 76
+
+    (40) unary -> Not unary .
+
+    Mul             reduce using rule 40 (unary -> Not unary .)
+    Div             reduce using rule 40 (unary -> Not unary .)
+    Mod             reduce using rule 40 (unary -> Not unary .)
+    Plus            reduce using rule 40 (unary -> Not unary .)
+    Minus           reduce using rule 40 (unary -> Not unary .)
+    Less            reduce using rule 40 (unary -> Not unary .)
+    Greater         reduce using rule 40 (unary -> Not unary .)
+    LessEqual       reduce using rule 40 (unary -> Not unary .)
+    GreaterEqual    reduce using rule 40 (unary -> Not unary .)
+    NotEqual        reduce using rule 40 (unary -> Not unary .)
+    Equal           reduce using rule 40 (unary -> Not unary .)
+    BitAnd          reduce using rule 40 (unary -> Not unary .)
+    Xor             reduce using rule 40 (unary -> Not unary .)
+    BitOr           reduce using rule 40 (unary -> Not unary .)
+    And             reduce using rule 40 (unary -> Not unary .)
+    Question        reduce using rule 40 (unary -> Not unary .)
+    Or              reduce using rule 40 (unary -> Not unary .)
+    Semi            reduce using rule 40 (unary -> Not unary .)
+    RParen          reduce using rule 40 (unary -> Not unary .)
+    Colon           reduce using rule 40 (unary -> Not unary .)
+
+
+state 77
+
+    (23) declaration -> type Identifier Assign . expression
+    (24) expression -> . assignment
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 101
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 78
+
+    (41) assignment -> Identifier Assign expression .
+
+    Semi            reduce using rule 41 (assignment -> Identifier Assign expression .)
+    RParen          reduce using rule 41 (assignment -> Identifier Assign expression .)
+    Colon           reduce using rule 41 (assignment -> Identifier Assign expression .)
+
+
+state 79
+
+    (61) primary -> LParen expression RParen .
+
+    Mul             reduce using rule 61 (primary -> LParen expression RParen .)
+    Div             reduce using rule 61 (primary -> LParen expression RParen .)
+    Mod             reduce using rule 61 (primary -> LParen expression RParen .)
+    Plus            reduce using rule 61 (primary -> LParen expression RParen .)
+    Minus           reduce using rule 61 (primary -> LParen expression RParen .)
+    Less            reduce using rule 61 (primary -> LParen expression RParen .)
+    Greater         reduce using rule 61 (primary -> LParen expression RParen .)
+    LessEqual       reduce using rule 61 (primary -> LParen expression RParen .)
+    GreaterEqual    reduce using rule 61 (primary -> LParen expression RParen .)
+    NotEqual        reduce using rule 61 (primary -> LParen expression RParen .)
+    Equal           reduce using rule 61 (primary -> LParen expression RParen .)
+    BitAnd          reduce using rule 61 (primary -> LParen expression RParen .)
+    Xor             reduce using rule 61 (primary -> LParen expression RParen .)
+    BitOr           reduce using rule 61 (primary -> LParen expression RParen .)
+    And             reduce using rule 61 (primary -> LParen expression RParen .)
+    Question        reduce using rule 61 (primary -> LParen expression RParen .)
+    Or              reduce using rule 61 (primary -> LParen expression RParen .)
+    Semi            reduce using rule 61 (primary -> LParen expression RParen .)
+    RParen          reduce using rule 61 (primary -> LParen expression RParen .)
+    Colon           reduce using rule 61 (primary -> LParen expression RParen .)
+
+
+state 80
+
+    (18) statement_matched -> LBrace block RBrace .
+
+    RBrace          reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    If              reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    While           reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Return          reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    LBrace          reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Break           reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Int             reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Identifier      reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Minus           reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    BitNot          reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Not             reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Integer         reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    LParen          reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Semi            reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+    Else            reduce using rule 18 (statement_matched -> LBrace block RBrace .)
+
+
+state 81
+
+    (11) statement_matched -> If LParen expression . RParen statement_matched Else statement_matched
+    (12) statement_unmatched -> If LParen expression . RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> If LParen expression . RParen statement
+
+    RParen          shift and go to state 102
+
+
+state 82
+
+    (14) statement_matched -> While LParen expression . RParen statement_matched
+    (15) statement_unmatched -> While LParen expression . RParen statement_unmatched
+
+    RParen          shift and go to state 103
+
+
+state 83
+
+    (16) statement_matched -> Return expression Semi .
+
+    RBrace          reduce using rule 16 (statement_matched -> Return expression Semi .)
+    If              reduce using rule 16 (statement_matched -> Return expression Semi .)
+    While           reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Return          reduce using rule 16 (statement_matched -> Return expression Semi .)
+    LBrace          reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Break           reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Int             reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Identifier      reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Minus           reduce using rule 16 (statement_matched -> Return expression Semi .)
+    BitNot          reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Not             reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Integer         reduce using rule 16 (statement_matched -> Return expression Semi .)
+    LParen          reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Semi            reduce using rule 16 (statement_matched -> Return expression Semi .)
+    Else            reduce using rule 16 (statement_matched -> Return expression Semi .)
+
+
+state 84
+
+    (58) conditional -> logical_or Question expression . Colon conditional
+
+    Colon           shift and go to state 104
+
+
+state 85
+
+    (42) logical_or -> logical_or Or logical_and .
+    (43) logical_and -> logical_and . And bit_or
+
+    Question        reduce using rule 42 (logical_or -> logical_or Or logical_and .)
+    Or              reduce using rule 42 (logical_or -> logical_or Or logical_and .)
+    Semi            reduce using rule 42 (logical_or -> logical_or Or logical_and .)
+    RParen          reduce using rule 42 (logical_or -> logical_or Or logical_and .)
+    Colon           reduce using rule 42 (logical_or -> logical_or Or logical_and .)
+    And             shift and go to state 58
+
+
+state 86
+
+    (43) logical_and -> logical_and And bit_or .
+    (44) bit_or -> bit_or . BitOr xor
+
+    And             reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    Question        reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    Or              reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    Semi            reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    RParen          reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    Colon           reduce using rule 43 (logical_and -> logical_and And bit_or .)
+    BitOr           shift and go to state 59
+
+
+state 87
+
+    (44) bit_or -> bit_or BitOr xor .
+    (45) xor -> xor . Xor bit_and
+
+    BitOr           reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    And             reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    Question        reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    Or              reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    Semi            reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    RParen          reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    Colon           reduce using rule 44 (bit_or -> bit_or BitOr xor .)
+    Xor             shift and go to state 60
+
+
+state 88
+
+    (45) xor -> xor Xor bit_and .
+    (46) bit_and -> bit_and . BitAnd equality
+
+    Xor             reduce using rule 45 (xor -> xor Xor bit_and .)
+    BitOr           reduce using rule 45 (xor -> xor Xor bit_and .)
+    And             reduce using rule 45 (xor -> xor Xor bit_and .)
+    Question        reduce using rule 45 (xor -> xor Xor bit_and .)
+    Or              reduce using rule 45 (xor -> xor Xor bit_and .)
+    Semi            reduce using rule 45 (xor -> xor Xor bit_and .)
+    RParen          reduce using rule 45 (xor -> xor Xor bit_and .)
+    Colon           reduce using rule 45 (xor -> xor Xor bit_and .)
+    BitAnd          shift and go to state 61
+
+
+state 89
+
+    (46) bit_and -> bit_and BitAnd equality .
+    (47) equality -> equality . NotEqual relational
+    (48) equality -> equality . Equal relational
+
+    BitAnd          reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    Xor             reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    BitOr           reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    And             reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    Question        reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    Or              reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    Semi            reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    RParen          reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    Colon           reduce using rule 46 (bit_and -> bit_and BitAnd equality .)
+    NotEqual        shift and go to state 62
+    Equal           shift and go to state 63
+
+
+state 90
+
+    (47) equality -> equality NotEqual relational .
+    (49) relational -> relational . Less additive
+    (50) relational -> relational . Greater additive
+    (51) relational -> relational . LessEqual additive
+    (52) relational -> relational . GreaterEqual additive
+
+    NotEqual        reduce using rule 47 (equality -> equality NotEqual relational .)
+    Equal           reduce using rule 47 (equality -> equality NotEqual relational .)
+    BitAnd          reduce using rule 47 (equality -> equality NotEqual relational .)
+    Xor             reduce using rule 47 (equality -> equality NotEqual relational .)
+    BitOr           reduce using rule 47 (equality -> equality NotEqual relational .)
+    And             reduce using rule 47 (equality -> equality NotEqual relational .)
+    Question        reduce using rule 47 (equality -> equality NotEqual relational .)
+    Or              reduce using rule 47 (equality -> equality NotEqual relational .)
+    Semi            reduce using rule 47 (equality -> equality NotEqual relational .)
+    RParen          reduce using rule 47 (equality -> equality NotEqual relational .)
+    Colon           reduce using rule 47 (equality -> equality NotEqual relational .)
+    Less            shift and go to state 64
+    Greater         shift and go to state 65
+    LessEqual       shift and go to state 66
+    GreaterEqual    shift and go to state 67
+
+
+state 91
+
+    (48) equality -> equality Equal relational .
+    (49) relational -> relational . Less additive
+    (50) relational -> relational . Greater additive
+    (51) relational -> relational . LessEqual additive
+    (52) relational -> relational . GreaterEqual additive
+
+    NotEqual        reduce using rule 48 (equality -> equality Equal relational .)
+    Equal           reduce using rule 48 (equality -> equality Equal relational .)
+    BitAnd          reduce using rule 48 (equality -> equality Equal relational .)
+    Xor             reduce using rule 48 (equality -> equality Equal relational .)
+    BitOr           reduce using rule 48 (equality -> equality Equal relational .)
+    And             reduce using rule 48 (equality -> equality Equal relational .)
+    Question        reduce using rule 48 (equality -> equality Equal relational .)
+    Or              reduce using rule 48 (equality -> equality Equal relational .)
+    Semi            reduce using rule 48 (equality -> equality Equal relational .)
+    RParen          reduce using rule 48 (equality -> equality Equal relational .)
+    Colon           reduce using rule 48 (equality -> equality Equal relational .)
+    Less            shift and go to state 64
+    Greater         shift and go to state 65
+    LessEqual       shift and go to state 66
+    GreaterEqual    shift and go to state 67
+
+
+state 92
+
+    (49) relational -> relational Less additive .
+    (53) additive -> additive . Plus multiplicative
+    (54) additive -> additive . Minus multiplicative
+
+    Less            reduce using rule 49 (relational -> relational Less additive .)
+    Greater         reduce using rule 49 (relational -> relational Less additive .)
+    LessEqual       reduce using rule 49 (relational -> relational Less additive .)
+    GreaterEqual    reduce using rule 49 (relational -> relational Less additive .)
+    NotEqual        reduce using rule 49 (relational -> relational Less additive .)
+    Equal           reduce using rule 49 (relational -> relational Less additive .)
+    BitAnd          reduce using rule 49 (relational -> relational Less additive .)
+    Xor             reduce using rule 49 (relational -> relational Less additive .)
+    BitOr           reduce using rule 49 (relational -> relational Less additive .)
+    And             reduce using rule 49 (relational -> relational Less additive .)
+    Question        reduce using rule 49 (relational -> relational Less additive .)
+    Or              reduce using rule 49 (relational -> relational Less additive .)
+    Semi            reduce using rule 49 (relational -> relational Less additive .)
+    RParen          reduce using rule 49 (relational -> relational Less additive .)
+    Colon           reduce using rule 49 (relational -> relational Less additive .)
+    Plus            shift and go to state 68
+    Minus           shift and go to state 69
+
+
+state 93
+
+    (50) relational -> relational Greater additive .
+    (53) additive -> additive . Plus multiplicative
+    (54) additive -> additive . Minus multiplicative
+
+    Less            reduce using rule 50 (relational -> relational Greater additive .)
+    Greater         reduce using rule 50 (relational -> relational Greater additive .)
+    LessEqual       reduce using rule 50 (relational -> relational Greater additive .)
+    GreaterEqual    reduce using rule 50 (relational -> relational Greater additive .)
+    NotEqual        reduce using rule 50 (relational -> relational Greater additive .)
+    Equal           reduce using rule 50 (relational -> relational Greater additive .)
+    BitAnd          reduce using rule 50 (relational -> relational Greater additive .)
+    Xor             reduce using rule 50 (relational -> relational Greater additive .)
+    BitOr           reduce using rule 50 (relational -> relational Greater additive .)
+    And             reduce using rule 50 (relational -> relational Greater additive .)
+    Question        reduce using rule 50 (relational -> relational Greater additive .)
+    Or              reduce using rule 50 (relational -> relational Greater additive .)
+    Semi            reduce using rule 50 (relational -> relational Greater additive .)
+    RParen          reduce using rule 50 (relational -> relational Greater additive .)
+    Colon           reduce using rule 50 (relational -> relational Greater additive .)
+    Plus            shift and go to state 68
+    Minus           shift and go to state 69
+
+
+state 94
+
+    (51) relational -> relational LessEqual additive .
+    (53) additive -> additive . Plus multiplicative
+    (54) additive -> additive . Minus multiplicative
+
+    Less            reduce using rule 51 (relational -> relational LessEqual additive .)
+    Greater         reduce using rule 51 (relational -> relational LessEqual additive .)
+    LessEqual       reduce using rule 51 (relational -> relational LessEqual additive .)
+    GreaterEqual    reduce using rule 51 (relational -> relational LessEqual additive .)
+    NotEqual        reduce using rule 51 (relational -> relational LessEqual additive .)
+    Equal           reduce using rule 51 (relational -> relational LessEqual additive .)
+    BitAnd          reduce using rule 51 (relational -> relational LessEqual additive .)
+    Xor             reduce using rule 51 (relational -> relational LessEqual additive .)
+    BitOr           reduce using rule 51 (relational -> relational LessEqual additive .)
+    And             reduce using rule 51 (relational -> relational LessEqual additive .)
+    Question        reduce using rule 51 (relational -> relational LessEqual additive .)
+    Or              reduce using rule 51 (relational -> relational LessEqual additive .)
+    Semi            reduce using rule 51 (relational -> relational LessEqual additive .)
+    RParen          reduce using rule 51 (relational -> relational LessEqual additive .)
+    Colon           reduce using rule 51 (relational -> relational LessEqual additive .)
+    Plus            shift and go to state 68
+    Minus           shift and go to state 69
+
+
+state 95
+
+    (52) relational -> relational GreaterEqual additive .
+    (53) additive -> additive . Plus multiplicative
+    (54) additive -> additive . Minus multiplicative
+
+    Less            reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Greater         reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    LessEqual       reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    GreaterEqual    reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    NotEqual        reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Equal           reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    BitAnd          reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Xor             reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    BitOr           reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    And             reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Question        reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Or              reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Semi            reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    RParen          reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Colon           reduce using rule 52 (relational -> relational GreaterEqual additive .)
+    Plus            shift and go to state 68
+    Minus           shift and go to state 69
+
+
+state 96
+
+    (53) additive -> additive Plus multiplicative .
+    (55) multiplicative -> multiplicative . Mul unary
+    (56) multiplicative -> multiplicative . Div unary
+    (57) multiplicative -> multiplicative . Mod unary
+
+    Plus            reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Minus           reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Less            reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Greater         reduce using rule 53 (additive -> additive Plus multiplicative .)
+    LessEqual       reduce using rule 53 (additive -> additive Plus multiplicative .)
+    GreaterEqual    reduce using rule 53 (additive -> additive Plus multiplicative .)
+    NotEqual        reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Equal           reduce using rule 53 (additive -> additive Plus multiplicative .)
+    BitAnd          reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Xor             reduce using rule 53 (additive -> additive Plus multiplicative .)
+    BitOr           reduce using rule 53 (additive -> additive Plus multiplicative .)
+    And             reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Question        reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Or              reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Semi            reduce using rule 53 (additive -> additive Plus multiplicative .)
+    RParen          reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Colon           reduce using rule 53 (additive -> additive Plus multiplicative .)
+    Mul             shift and go to state 70
+    Div             shift and go to state 71
+    Mod             shift and go to state 72
+
+
+state 97
+
+    (54) additive -> additive Minus multiplicative .
+    (55) multiplicative -> multiplicative . Mul unary
+    (56) multiplicative -> multiplicative . Div unary
+    (57) multiplicative -> multiplicative . Mod unary
+
+    Plus            reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Minus           reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Less            reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Greater         reduce using rule 54 (additive -> additive Minus multiplicative .)
+    LessEqual       reduce using rule 54 (additive -> additive Minus multiplicative .)
+    GreaterEqual    reduce using rule 54 (additive -> additive Minus multiplicative .)
+    NotEqual        reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Equal           reduce using rule 54 (additive -> additive Minus multiplicative .)
+    BitAnd          reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Xor             reduce using rule 54 (additive -> additive Minus multiplicative .)
+    BitOr           reduce using rule 54 (additive -> additive Minus multiplicative .)
+    And             reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Question        reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Or              reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Semi            reduce using rule 54 (additive -> additive Minus multiplicative .)
+    RParen          reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Colon           reduce using rule 54 (additive -> additive Minus multiplicative .)
+    Mul             shift and go to state 70
+    Div             shift and go to state 71
+    Mod             shift and go to state 72
+
+
+state 98
+
+    (55) multiplicative -> multiplicative Mul unary .
+
+    Mul             reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Div             reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Mod             reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Plus            reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Minus           reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Less            reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Greater         reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    LessEqual       reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    GreaterEqual    reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    NotEqual        reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Equal           reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    BitAnd          reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Xor             reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    BitOr           reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    And             reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Question        reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Or              reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Semi            reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    RParen          reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+    Colon           reduce using rule 55 (multiplicative -> multiplicative Mul unary .)
+
+
+state 99
+
+    (56) multiplicative -> multiplicative Div unary .
+
+    Mul             reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Div             reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Mod             reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Plus            reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Minus           reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Less            reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Greater         reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    LessEqual       reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    GreaterEqual    reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    NotEqual        reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Equal           reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    BitAnd          reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Xor             reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    BitOr           reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    And             reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Question        reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Or              reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Semi            reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    RParen          reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+    Colon           reduce using rule 56 (multiplicative -> multiplicative Div unary .)
+
+
+state 100
+
+    (57) multiplicative -> multiplicative Mod unary .
+
+    Mul             reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Div             reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Mod             reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Plus            reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Minus           reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Less            reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Greater         reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    LessEqual       reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    GreaterEqual    reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    NotEqual        reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Equal           reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    BitAnd          reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Xor             reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    BitOr           reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    And             reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Question        reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Or              reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Semi            reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    RParen          reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+    Colon           reduce using rule 57 (multiplicative -> multiplicative Mod unary .)
+
+
+state 101
+
+    (23) declaration -> type Identifier Assign expression .
+
+    Semi            reduce using rule 23 (declaration -> type Identifier Assign expression .)
+
+
+state 102
+
+    (11) statement_matched -> If LParen expression RParen . statement_matched Else statement_matched
+    (12) statement_unmatched -> If LParen expression RParen . statement_matched Else statement_unmatched
+    (13) statement_unmatched -> If LParen expression RParen . statement
+    (11) statement_matched -> . If LParen expression RParen statement_matched Else statement_matched
+    (14) statement_matched -> . While LParen expression RParen statement_matched
+    (16) statement_matched -> . Return expression Semi
+    (17) statement_matched -> . opt_expression Semi
+    (18) statement_matched -> . LBrace block RBrace
+    (19) statement_matched -> . Break Semi
+    (9) statement -> . statement_matched
+    (10) statement -> . statement_unmatched
+    (20) opt_expression -> . expression
+    (21) opt_expression -> . empty
+    (12) statement_unmatched -> . If LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> . If LParen expression RParen statement
+    (15) statement_unmatched -> . While LParen expression RParen statement_unmatched
+    (24) expression -> . assignment
+    (1) empty -> .
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    If              shift and go to state 22
+    While           shift and go to state 23
+    Return          shift and go to state 24
+    LBrace          shift and go to state 14
+    Break           shift and go to state 26
+    Semi            reduce using rule 1 (empty -> .)
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 21
+    statement_matched              shift and go to state 105
+    statement_unmatched            shift and go to state 20
+    statement                      shift and go to state 106
+    opt_expression                 shift and go to state 25
+    empty                          shift and go to state 27
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 103
+
+    (14) statement_matched -> While LParen expression RParen . statement_matched
+    (15) statement_unmatched -> While LParen expression RParen . statement_unmatched
+    (11) statement_matched -> . If LParen expression RParen statement_matched Else statement_matched
+    (14) statement_matched -> . While LParen expression RParen statement_matched
+    (16) statement_matched -> . Return expression Semi
+    (17) statement_matched -> . opt_expression Semi
+    (18) statement_matched -> . LBrace block RBrace
+    (19) statement_matched -> . Break Semi
+    (12) statement_unmatched -> . If LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> . If LParen expression RParen statement
+    (15) statement_unmatched -> . While LParen expression RParen statement_unmatched
+    (20) opt_expression -> . expression
+    (21) opt_expression -> . empty
+    (24) expression -> . assignment
+    (1) empty -> .
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    If              shift and go to state 22
+    While           shift and go to state 23
+    Return          shift and go to state 24
+    LBrace          shift and go to state 14
+    Break           shift and go to state 26
+    Semi            reduce using rule 1 (empty -> .)
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 21
+    statement_matched              shift and go to state 107
+    statement_unmatched            shift and go to state 108
+    opt_expression                 shift and go to state 25
+    empty                          shift and go to state 27
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 104
+
+    (58) conditional -> logical_or Question expression Colon . conditional
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    Identifier      shift and go to state 74
+    LParen          shift and go to state 13
+
+    logical_or                     shift and go to state 30
+    conditional                    shift and go to state 109
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 105
+
+    (11) statement_matched -> If LParen expression RParen statement_matched . Else statement_matched
+    (12) statement_unmatched -> If LParen expression RParen statement_matched . Else statement_unmatched
+    (9) statement -> statement_matched .
+
+    Else            shift and go to state 110
+    RBrace          reduce using rule 9 (statement -> statement_matched .)
+    If              reduce using rule 9 (statement -> statement_matched .)
+    While           reduce using rule 9 (statement -> statement_matched .)
+    Return          reduce using rule 9 (statement -> statement_matched .)
+    LBrace          reduce using rule 9 (statement -> statement_matched .)
+    Break           reduce using rule 9 (statement -> statement_matched .)
+    Int             reduce using rule 9 (statement -> statement_matched .)
+    Identifier      reduce using rule 9 (statement -> statement_matched .)
+    Minus           reduce using rule 9 (statement -> statement_matched .)
+    BitNot          reduce using rule 9 (statement -> statement_matched .)
+    Not             reduce using rule 9 (statement -> statement_matched .)
+    Integer         reduce using rule 9 (statement -> statement_matched .)
+    LParen          reduce using rule 9 (statement -> statement_matched .)
+    Semi            reduce using rule 9 (statement -> statement_matched .)
+
+
+state 106
+
+    (13) statement_unmatched -> If LParen expression RParen statement .
+
+    RBrace          reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    If              reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    While           reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Return          reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    LBrace          reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Break           reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Int             reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Identifier      reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Minus           reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    BitNot          reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Not             reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Integer         reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    LParen          reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+    Semi            reduce using rule 13 (statement_unmatched -> If LParen expression RParen statement .)
+
+
+state 107
+
+    (14) statement_matched -> While LParen expression RParen statement_matched .
+
+    RBrace          reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    If              reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    While           reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Return          reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    LBrace          reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Break           reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Int             reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Identifier      reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Minus           reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    BitNot          reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Not             reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Integer         reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    LParen          reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Semi            reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+    Else            reduce using rule 14 (statement_matched -> While LParen expression RParen statement_matched .)
+
+
+state 108
+
+    (15) statement_unmatched -> While LParen expression RParen statement_unmatched .
+
+    RBrace          reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    If              reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    While           reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Return          reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    LBrace          reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Break           reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Int             reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Identifier      reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Minus           reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    BitNot          reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Not             reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Integer         reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    LParen          reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+    Semi            reduce using rule 15 (statement_unmatched -> While LParen expression RParen statement_unmatched .)
+
+
+state 109
+
+    (58) conditional -> logical_or Question expression Colon conditional .
+
+    Semi            reduce using rule 58 (conditional -> logical_or Question expression Colon conditional .)
+    RParen          reduce using rule 58 (conditional -> logical_or Question expression Colon conditional .)
+    Colon           reduce using rule 58 (conditional -> logical_or Question expression Colon conditional .)
+
+
+state 110
+
+    (11) statement_matched -> If LParen expression RParen statement_matched Else . statement_matched
+    (12) statement_unmatched -> If LParen expression RParen statement_matched Else . statement_unmatched
+    (11) statement_matched -> . If LParen expression RParen statement_matched Else statement_matched
+    (14) statement_matched -> . While LParen expression RParen statement_matched
+    (16) statement_matched -> . Return expression Semi
+    (17) statement_matched -> . opt_expression Semi
+    (18) statement_matched -> . LBrace block RBrace
+    (19) statement_matched -> . Break Semi
+    (12) statement_unmatched -> . If LParen expression RParen statement_matched Else statement_unmatched
+    (13) statement_unmatched -> . If LParen expression RParen statement
+    (15) statement_unmatched -> . While LParen expression RParen statement_unmatched
+    (20) opt_expression -> . expression
+    (21) opt_expression -> . empty
+    (24) expression -> . assignment
+    (1) empty -> .
+    (25) assignment -> . conditional
+    (41) assignment -> . Identifier Assign expression
+    (26) conditional -> . logical_or
+    (58) conditional -> . logical_or Question expression Colon conditional
+    (27) logical_or -> . logical_and
+    (42) logical_or -> . logical_or Or logical_and
+    (28) logical_and -> . bit_or
+    (43) logical_and -> . logical_and And bit_or
+    (29) bit_or -> . xor
+    (44) bit_or -> . bit_or BitOr xor
+    (30) xor -> . bit_and
+    (45) xor -> . xor Xor bit_and
+    (31) bit_and -> . equality
+    (46) bit_and -> . bit_and BitAnd equality
+    (32) equality -> . relational
+    (47) equality -> . equality NotEqual relational
+    (48) equality -> . equality Equal relational
+    (33) relational -> . additive
+    (49) relational -> . relational Less additive
+    (50) relational -> . relational Greater additive
+    (51) relational -> . relational LessEqual additive
+    (52) relational -> . relational GreaterEqual additive
+    (34) additive -> . multiplicative
+    (53) additive -> . additive Plus multiplicative
+    (54) additive -> . additive Minus multiplicative
+    (35) multiplicative -> . unary
+    (55) multiplicative -> . multiplicative Mul unary
+    (56) multiplicative -> . multiplicative Div unary
+    (57) multiplicative -> . multiplicative Mod unary
+    (36) unary -> . postfix
+    (38) unary -> . Minus unary
+    (39) unary -> . BitNot unary
+    (40) unary -> . Not unary
+    (37) postfix -> . primary
+    (59) primary -> . Integer
+    (60) primary -> . Identifier
+    (61) primary -> . LParen expression RParen
+
+    If              shift and go to state 22
+    While           shift and go to state 23
+    Return          shift and go to state 24
+    LBrace          shift and go to state 14
+    Break           shift and go to state 26
+    Semi            reduce using rule 1 (empty -> .)
+    Identifier      shift and go to state 12
+    Minus           shift and go to state 39
+    BitNot          shift and go to state 42
+    Not             shift and go to state 43
+    Integer         shift and go to state 45
+    LParen          shift and go to state 13
+
+    expression                     shift and go to state 21
+    statement_matched              shift and go to state 111
+    statement_unmatched            shift and go to state 112
+    opt_expression                 shift and go to state 25
+    empty                          shift and go to state 27
+    assignment                     shift and go to state 28
+    conditional                    shift and go to state 29
+    logical_or                     shift and go to state 30
+    logical_and                    shift and go to state 31
+    bit_or                         shift and go to state 32
+    xor                            shift and go to state 33
+    bit_and                        shift and go to state 34
+    equality                       shift and go to state 35
+    relational                     shift and go to state 36
+    additive                       shift and go to state 37
+    multiplicative                 shift and go to state 38
+    unary                          shift and go to state 40
+    postfix                        shift and go to state 41
+    primary                        shift and go to state 44
+
+state 111
+
+    (11) statement_matched -> If LParen expression RParen statement_matched Else statement_matched .
+
+    RBrace          reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    If              reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    While           reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Return          reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    LBrace          reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Break           reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Int             reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Identifier      reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Minus           reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    BitNot          reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Not             reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Integer         reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    LParen          reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Semi            reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+    Else            reduce using rule 11 (statement_matched -> If LParen expression RParen statement_matched Else statement_matched .)
+
+
+state 112
+
+    (12) statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .
+
+    RBrace          reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    If              reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    While           reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Return          reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    LBrace          reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Break           reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Int             reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Identifier      reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Minus           reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    BitNot          reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Not             reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Integer         reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    LParen          reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+    Semi            reduce using rule 12 (statement_unmatched -> If LParen expression RParen statement_matched Else statement_unmatched .)
+

@@ -43,7 +43,7 @@ class UnaryOp(Operator):
     """
 
     Neg = "-"
-    BitNot = "~"
+    Not = "~"
     LogicNot = "!"
 
 

@@ -5,12 +5,9 @@ Modify this file if you want to add a new AST node.
 """
 
 from __future__ import annotations
-
 from typing import Any, Generic, Optional, TypeVar, Union
-
 from frontend.type import INT, DecafType
 from utils import T, U
-
 from .node import NULL, BinaryOp, Node, UnaryOp
 from .visitor import Visitor, accept
 

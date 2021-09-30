@@ -78,6 +78,7 @@ tokens = tuple(
 ) + tuple(reserved.values())
 
 
+
 def _escape():
     "Don't care about this"
 
