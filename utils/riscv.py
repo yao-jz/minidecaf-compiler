@@ -141,6 +141,20 @@ class Riscv:
                     ) + "\n" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
                     )
+            elif(self.op == "lor"):
+                return "or " + Riscv.FMT3.format(
+                        str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                    ) + "\n" + "snez " + Riscv.FMT2.format(
+                        str(self.dsts[0]), str(self.srcs[0])
+                    )
+            elif(self.op == "land"):
+                return "snez " + Riscv.FMT2.format(
+                    str(self.srcs[0]), str(self.srcs[0])
+                ) + "\n" + "snez " + Riscv.FMT2.format(
+                    str(self.srcs[1]), str(self.srcs[1])
+                ) + "\n" + "and " + Riscv.FMT3.format(
+                    str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])
+                )
             else:
                 return "{} ".format(self.op) + Riscv.FMT3.format(
                     str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])

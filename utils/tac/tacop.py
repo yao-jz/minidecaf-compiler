@@ -43,6 +43,8 @@ class BinaryOp(Enum):
     AND = auto()
     OR = auto()
     SEQZ = auto()
+    LAND = auto()
+    LOR = auto()
 
 
 # Kinds of branching with conditions.

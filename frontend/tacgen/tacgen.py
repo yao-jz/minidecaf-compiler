@@ -132,8 +132,8 @@ class TACGen(Visitor[FuncVisitor, None]):
             node.BinaryOp.LE: tacop.BinaryOp.LEQ,
             node.BinaryOp.GE: tacop.BinaryOp.GEQ,
             
-            node.BinaryOp.LogicOr: tacop.BinaryOp.OR,
-            node.BinaryOp.LogicAnd: tacop.BinaryOp.AND,
+            node.BinaryOp.LogicOr: tacop.BinaryOp.LOR,
+            node.BinaryOp.LogicAnd: tacop.BinaryOp.LAND,
 
             # You can add binary operations here.
         }[expr.op]
