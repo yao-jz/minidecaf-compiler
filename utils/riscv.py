@@ -120,39 +120,39 @@ class Riscv:
             if(self.op == "equ"):
                 return "sub " + Riscv.FMT3.format(
                     str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                ) + "\n" + "seqz " + Riscv.FMT2.format(
+                ) + "\n\t" + "seqz " + Riscv.FMT2.format(
                     str(self.dsts[0]), str(self.srcs[0])
                 )
             elif(self.op == "geq"):
                 return "slt " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n" + "xori " + Riscv.FMT3.format(
+                    ) + "\n\t" + "xori " + Riscv.FMT3.format(
                         str(self.dsts[0]), str(self.srcs[0]), "1"
                     )
             elif(self.op == "leq"):
                 return "sgt " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n" + "xori " + Riscv.FMT3.format(
+                    ) + "\n\t" + "xori " + Riscv.FMT3.format(
                         str(self.dsts[0]), str(self.srcs[0]), "1"
                     )
             elif(self.op == "neq"):
                 return "sub " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n" + "snez " + Riscv.FMT2.format(
+                    ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
                     )
             elif(self.op == "lor"):
                 return "or " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n" + "snez " + Riscv.FMT2.format(
+                    ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
                     )
             elif(self.op == "land"):
                 return "snez " + Riscv.FMT2.format(
                     str(self.srcs[0]), str(self.srcs[0])
-                ) + "\n" + "snez " + Riscv.FMT2.format(
+                ) + "\n\t" + "snez " + Riscv.FMT2.format(
                     str(self.srcs[1]), str(self.srcs[1])
-                ) + "\n" + "and " + Riscv.FMT3.format(
+                ) + "\n\t" + "and " + Riscv.FMT3.format(
                     str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])
                 )
             else:

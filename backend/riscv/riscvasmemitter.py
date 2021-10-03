@@ -41,9 +41,7 @@ class RiscvAsmEmitter(AsmEmitter):
         )
         for instr in func.getInstrSeq():
             instr.accept(selector)
-
         info = SubroutineInfo(func.entry)
-
         return (selector.seq, info)
 
     # use info to construct a RiscvSubroutineEmitter
@@ -85,6 +83,10 @@ class RiscvAsmEmitter(AsmEmitter):
         def visitBranch(self, instr: Branch) -> None:
             self.seq.append(Riscv.Jump(instr.target))
 
+        def visitAssign(self, instr: Assign) -> None:
+            self.seq.append(Riscv.Move(instr.dst, instr.src))
+
+
         # in step9, you need to think about how to pass the parameters and how to store and restore callerSave regs
         # in step11, you need to think about how to store the array 
 """
@@ -111,6 +113,7 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
 
     def emitComment(self, comment: str) -> None:
         # you can add some log here to help you debug
+        # print(comment)
         pass
     
     # store some temp to stack

@@ -13,6 +13,7 @@ from frontend.type.array import ArrayType
 from frontend.type.type import DecafType
 from utils.error import *
 from utils.riscv import MAX_INT
+from utils.tac.tacinstr import Assign
 
 """
 The namer phase: resolve all symbols defined in the abstract syntax tree and store them in symbol tables (i.e. scopes).
@@ -98,13 +99,34 @@ class Namer(Visitor[ScopeStack, None]):
         3. Set the 'symbol' attribute of decl.
         4. If there is an initial value, visit it.
         """
-        pass
+        ok = ctx.findConflict(decl.ident.value)
+        if(not ok):
+            new_symbol = VarSymbol(decl.ident.value, decl.var_t.type)
+            new_symbol.setInitValue(0)
+            decl.setattr("symbol", new_symbol)
+            ctx.declare(new_symbol)
+            if(decl.init_expr):
+                decl.init_expr.accept(self, ctx)
+                # if(type(decl.init_expr) == IntLiteral):
+                #     new_symbol.setInitValue(decl.init_expr.value)
+                # elif(type(decl.init_expr) == Assignment):
+                #     decl.init_expr.accept(self, ctx)
+                #     print(type(decl.init_expr.lhs))
+                #     new_symbol.setInitValue(decl.init_expr.lhs)
+            # else:
+            #     new_symbol.setInitValue(0)
+            # decl.setattr("symbol", new_symbol)
+            # ctx.declare(new_symbol)
+        else:
+            raise DecafDeclConflictError()
+        
 
     def visitAssignment(self, expr: Assignment, ctx: ScopeStack) -> None:
         """
         1. Refer to the implementation of visitBinary.
         """
-        pass
+        expr.lhs.accept(self, ctx)
+        expr.rhs.accept(self, ctx)
 
     def visitUnary(self, expr: Unary, ctx: ScopeStack) -> None:
         expr.operand.accept(self, ctx)
@@ -125,7 +147,11 @@ class Namer(Visitor[ScopeStack, None]):
         2. If it has not been declared, raise a DecafUndefinedVarError.
         3. Set the 'symbol' attribute of ident.
         """
-        pass
+        symbol = ctx.lookup(ident.value)
+        if(symbol is not None):
+            ident.setattr("symbol", symbol)
+        else:
+            raise DecafUndefinedVarError()
 
     def visitIntLiteral(self, expr: IntLiteral, ctx: ScopeStack) -> None:
         value = expr.value

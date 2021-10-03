@@ -2,6 +2,7 @@ import utils.riscv as riscv
 from frontend.ast import node
 from frontend.ast.tree import *
 from frontend.ast.visitor import Visitor
+from frontend.ast.node import NullType
 from frontend.symbol.varsymbol import VarSymbol
 from frontend.type.array import ArrayType
 from utils.tac import tacop
@@ -48,7 +49,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         1. Set the 'val' attribute of ident as the temp variable of the 'symbol' attribute of ident.
         """
-        pass
+        ident.setattr("val", ident.getattr("symbol").temp)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
         """
@@ -56,7 +57,33 @@ class TACGen(Visitor[FuncVisitor, None]):
         2. Use mv.freshTemp to get a new temp variable for this symbol.
         3. If the declaration has an initial value, use mv.visitAssignment to set it.
         """
-        pass
+        symbol = decl.getattr("symbol")
+        
+        if(type(decl.init_expr) == IntLiteral):
+            symbol.initValue = decl.init_expr.value
+            symbol.temp = mv.visitLoad(symbol.initValue)
+            decl.setattr("symbol", symbol)
+        elif(type(decl.init_expr) == Identifier):
+            decl.init_expr.accept(self, mv)
+            symbol.temp = mv.freshTemp()
+            symbol.initValue = decl.init_expr.getattr("val")
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, symbol.initValue)
+        elif(type(decl.init_expr) == NullType):
+            symbol.initValue = 0
+            symbol.temp = mv.visitLoad(symbol.initValue)
+            decl.setattr("symbol", symbol)
+        elif(type(decl.init_expr) == Assignment):
+            decl.init_expr.accept(self, mv)
+            symbol.initValue = decl.init_expr.getattr("val")
+            symbol.temp = mv.freshTemp()
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, symbol.initValue)
+        else:
+            print("[debug] step into else")
+        
+
+
 
     def visitAssignment(self, expr: Assignment, mv: FuncVisitor) -> None:
         """
@@ -64,7 +91,15 @@ class TACGen(Visitor[FuncVisitor, None]):
         2. Use mv.visitAssignment to emit an assignment instruction.
         3. Set the 'val' attribute of expr as the value of assignment instruction.
         """
-        pass
+        expr.rhs.accept(self, mv)
+        if(hasattr(expr.lhs.getattr("symbol"),"temp")):
+            left_temp = expr.lhs.getattr("symbol").temp
+        else:
+            symbol = expr.lhs.getattr("symbol")
+            symbol.temp = mv.freshTemp()
+            expr.lhs.setattr("symbol", symbol)
+            left_temp = expr.lhs.getattr("symbol").temp
+        expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
         stmt.cond.accept(self, mv)
@@ -131,10 +166,8 @@ class TACGen(Visitor[FuncVisitor, None]):
             node.BinaryOp.GT: tacop.BinaryOp.SGT,
             node.BinaryOp.LE: tacop.BinaryOp.LEQ,
             node.BinaryOp.GE: tacop.BinaryOp.GEQ,
-            
             node.BinaryOp.LogicOr: tacop.BinaryOp.LOR,
             node.BinaryOp.LogicAnd: tacop.BinaryOp.LAND,
-
             # You can add binary operations here.
         }[expr.op]
         expr.setattr(

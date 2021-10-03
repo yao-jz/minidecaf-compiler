@@ -64,7 +64,6 @@ class BruteRegAlloc(RegAlloc):
         # in step9, you may need to think about how to store callersave regs here
         for loc in bb.allSeq():
             subEmitter.emitComment(str(loc.instr))
-
             self.allocForLoc(loc, subEmitter)
 
         for tempindex in bb.liveOut:
