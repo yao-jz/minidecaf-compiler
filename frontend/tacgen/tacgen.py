@@ -58,27 +58,22 @@ class TACGen(Visitor[FuncVisitor, None]):
         3. If the declaration has an initial value, use mv.visitAssignment to set it.
         """
         symbol = decl.getattr("symbol")
-        
         if(type(decl.init_expr) == IntLiteral):
-            symbol.initValue = decl.init_expr.value
-            symbol.temp = mv.visitLoad(symbol.initValue)
+            symbol.temp = mv.visitLoad(decl.init_expr.value)
             decl.setattr("symbol", symbol)
         elif(type(decl.init_expr) == Identifier):
             decl.init_expr.accept(self, mv)
             symbol.temp = mv.freshTemp()
-            symbol.initValue = decl.init_expr.getattr("val")
             decl.setattr("symbol", symbol)
-            mv.visitAssignment(symbol.temp, symbol.initValue)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         elif(type(decl.init_expr) == NullType):
-            symbol.initValue = 0
-            symbol.temp = mv.visitLoad(symbol.initValue)
+            symbol.temp = mv.visitLoad(0)
             decl.setattr("symbol", symbol)
         elif(type(decl.init_expr) == Assignment):
             decl.init_expr.accept(self, mv)
-            symbol.initValue = decl.init_expr.getattr("val")
             symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)
-            mv.visitAssignment(symbol.temp, symbol.initValue)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         else:
             print("[debug] step into else")
         

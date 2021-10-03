@@ -102,21 +102,10 @@ class Namer(Visitor[ScopeStack, None]):
         ok = ctx.findConflict(decl.ident.value)
         if(not ok):
             new_symbol = VarSymbol(decl.ident.value, decl.var_t.type)
-            new_symbol.setInitValue(0)
             decl.setattr("symbol", new_symbol)
             ctx.declare(new_symbol)
             if(decl.init_expr):
                 decl.init_expr.accept(self, ctx)
-                # if(type(decl.init_expr) == IntLiteral):
-                #     new_symbol.setInitValue(decl.init_expr.value)
-                # elif(type(decl.init_expr) == Assignment):
-                #     decl.init_expr.accept(self, ctx)
-                #     print(type(decl.init_expr.lhs))
-                #     new_symbol.setInitValue(decl.init_expr.lhs)
-            # else:
-            #     new_symbol.setInitValue(0)
-            # decl.setattr("symbol", new_symbol)
-            # ctx.declare(new_symbol)
         else:
             raise DecafDeclConflictError()
         
