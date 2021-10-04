@@ -74,7 +74,13 @@ class TACGen(Visitor[FuncVisitor, None]):
             symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)
             mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
+        elif(type(decl.init_expr) == ConditionExpression):
+            decl.init_expr.accept(self, mv)
+            symbol.temp = mv.freshTemp()
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         else:
+            print(type(decl.init_expr))
             print("[debug] step into else")
         
 
@@ -173,7 +179,27 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         1. Refer to the implementation of visitIf and visitBinary.
         """
-        pass
+        expr.cond.accept(self, mv)
+        expr_temp = mv.freshTemp()
+        skipLabel = mv.freshLabel()
+        exitLabel = mv.freshLabel()
+        mv.visitCondBranch(
+            tacop.CondBranchOp.BEQ, expr.cond.getattr("val"), skipLabel
+        )
+        expr.then.accept(self, mv)
+        mv.visitAssignment(expr_temp, expr.then.getattr("val"))
+        mv.visitBranch(exitLabel)   # jump
+        mv.visitLabel(skipLabel)
+        expr.otherwise.accept(self, mv)
+        mv.visitAssignment(expr_temp, expr.otherwise.getattr("val"))
+        mv.visitLabel(exitLabel)    # end
+        
+        expr.setattr(
+            "val", expr_temp
+        )
+
+        
+        
 
     def visitIntLiteral(self, expr: IntLiteral, mv: FuncVisitor) -> None:
         expr.setattr("val", mv.visitLoad(expr.value))

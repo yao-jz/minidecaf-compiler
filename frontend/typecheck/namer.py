@@ -50,15 +50,16 @@ class Namer(Visitor[ScopeStack, None]):
     def visitReturn(self, stmt: Return, ctx: ScopeStack) -> None:
         stmt.expr.accept(self, ctx)
 
-        """
-        def visitFor(self, stmt: For, ctx: ScopeStack) -> None:
 
+    # def visitFor(self, stmt: For, ctx: ScopeStack) -> None:
+        """
         1. Open a local scope for stmt.init.
         2. Visit stmt.init, stmt.cond, stmt.update.
         3. Open a loop in ctx (for validity checking of break/continue)
         4. Visit body of the loop.
         5. Close the loop and the local scope.
         """
+        # pass
 
     def visitIf(self, stmt: If, ctx: ScopeStack) -> None:
         stmt.cond.accept(self, ctx)
@@ -128,7 +129,9 @@ class Namer(Visitor[ScopeStack, None]):
         """
         1. Refer to the implementation of visitBinary.
         """
-        pass
+        expr.cond.accept(self, ctx)
+        expr.then.accept(self, ctx)
+        expr.otherwise.accept(self, ctx)
 
     def visitIdentifier(self, ident: Identifier, ctx: ScopeStack) -> None:
         """

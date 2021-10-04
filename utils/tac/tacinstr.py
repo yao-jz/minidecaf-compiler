@@ -143,7 +143,8 @@ class Branch(TACInstr):
         self.target = target
 
     def __str__(self) -> str:
-        return "branch %s" % str(self.target)
+        # return "branch %s" % str(self.target)
+        return "JUMP " + str(self.target)   # (yjz)
 
     def accept(self, v: TACVisitor) -> None:
         v.visitBranch(self)
@@ -158,11 +159,12 @@ class CondBranch(TACInstr):
         self.target = target
 
     def __str__(self) -> str:
-        return "if (%s %s) branch %s" % (
-            self.cond,
-            "== 0" if self.op == CondBranchOp.BEQ else "!= 0",
-            str(self.target),
-        )
+        # return "if (%s %s) branch %s" % (
+        #     self.cond,
+        #     "== 0" if self.op == CondBranchOp.BEQ else "!= 0",
+        #     str(self.target),
+        # )
+        return "BEQZ " + self.cond.__str__() + " " + str(self.target) # (yjz)
 
     def accept(self, v: TACVisitor) -> None:
         v.visitCondBranch(self)
