@@ -1,5 +1,10 @@
-int main() {
-    int a = 1 ? 2 ? 3 : 4 : 5;
-    int b = 0 ? 2 ? 3 : 4 : 5;
-    return a * b;
+int main(){
+    int a = 2;
+    if (a < 3) {
+        {
+            int a = 3;
+            return a;
+        }
+        return a;
+    }
 }

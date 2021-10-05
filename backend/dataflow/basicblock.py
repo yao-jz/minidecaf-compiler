@@ -42,7 +42,7 @@ class BasicBlock:
         self.id = id
         self.label = label
         self.locs: list[Loc] = locs.copy()
-
+        
         self.define: set[int] = set()
         self.liveUse: set[int] = set()
         self.liveIn: set[int] = set()

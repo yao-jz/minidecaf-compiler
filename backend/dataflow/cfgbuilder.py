@@ -63,13 +63,30 @@ class CFGBuilder:
             else:
                 if now < len(self.bbs):
                     edges.append((bb.id, bb.id + 1))
+
+        # 去除不可达边
+        # new_edge = []
+        # can_be_visited = [0]
+        # for (i, j) in edges:
+        #     if(i in can_be_visited):
+        #         can_be_visited.append(j)
+        #         new_edge.append((i, j))
+        # edges = new_edge
+        # new_bbs = []
+        # for i in self.bbs:
+        #     if(i.id in can_be_visited):
+        #         new_bbs.append(i)
+        # self.bbs = new_bbs
+
         return CFG(self.bbs, edges)
 
     def save(self, bb: BasicBlock):
         self.bbs.append(bb)
         self.buf.clear()
         self.currentBBLabel = None
-
+        # print("bb.id = ",bb.id, "#########################################")
+        # for i in bb.locs:
+        #     print(i.instr)
         if bb.label is not None:
             self.labelsToBBs[bb.label] = bb.id
 

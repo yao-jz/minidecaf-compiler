@@ -42,6 +42,9 @@ class RiscvAsmEmitter(AsmEmitter):
         for instr in func.getInstrSeq():
             instr.accept(selector)
         info = SubroutineInfo(func.entry)
+        # for i in selector.seq:
+        #     print(i)
+
         return (selector.seq, info)
 
     # use info to construct a RiscvSubroutineEmitter
@@ -131,6 +134,7 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
     # usually happen when using a temp which is stored to stack before
     # in step9, you need to think about the fuction parameters here
     def emitLoadFromStack(self, dst: Reg, src: Temp):
+        # print(self.offsets)
         if src.index not in self.offsets:
             raise IllegalArgumentException()
         else:

@@ -37,7 +37,13 @@ class BruteRegAlloc(RegAlloc):
 
     def accept(self, graph: CFG, info: SubroutineInfo) -> None:
         subEmitter = self.emitter.emitSubroutine(info)
+        # print(graph.links)
+        can_be_visited = [0]
         for bb in graph.iterator():
+            if(not bb.id in can_be_visited):
+                continue
+            for vis in graph.links[bb.id][1]:
+                can_be_visited.append(vis)
             # you need to think more here
             # maybe we don't need to alloc regs for all the basic blocks
             if bb.label is not None:
@@ -60,7 +66,6 @@ class BruteRegAlloc(RegAlloc):
         self.bindings.clear()
         for reg in self.emitter.allocatableRegs:
             reg.occupied = False
-
         # in step9, you may need to think about how to store callersave regs here
         for loc in bb.allSeq():
             subEmitter.emitComment(str(loc.instr))
@@ -77,7 +82,6 @@ class BruteRegAlloc(RegAlloc):
         instr = loc.instr
         srcRegs: list[Reg] = []
         dstRegs: list[Reg] = []
-
         for i in range(len(instr.srcs)):
             temp = instr.srcs[i]
             if isinstance(temp, Reg):

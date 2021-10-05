@@ -9,7 +9,6 @@ class Reg(Temp):
         super().__init__(-id - 1)
         self.id = id
         self.name = name
-
         self.occupied = False
         self.used = False
         self.temp: Optional[Temp] = None

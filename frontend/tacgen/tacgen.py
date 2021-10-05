@@ -59,8 +59,10 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         symbol = decl.getattr("symbol")
         if(type(decl.init_expr) == IntLiteral):
-            symbol.temp = mv.visitLoad(decl.init_expr.value)
+            another_temp = mv.visitLoad(decl.init_expr.value)
+            symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, another_temp)
         elif(type(decl.init_expr) == Identifier):
             decl.init_expr.accept(self, mv)
             symbol.temp = mv.freshTemp()

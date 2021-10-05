@@ -31,21 +31,28 @@ class Namer(Visitor[ScopeStack, None]):
         ctx = ScopeStack(program.globalScope)
 
         program.accept(self, ctx)
+
         return program
 
     def visitProgram(self, program: Program, ctx: ScopeStack) -> None:
         # Check if the 'main' function is missing
         if not program.hasMainFunc():
             raise DecafNoMainFuncError
-
         program.mainFunc().accept(self, ctx)
+        
 
     def visitFunction(self, func: Function, ctx: ScopeStack) -> None:
+        main_scope = Scope(ScopeKind.LOCAL)
+        ctx.open(main_scope)
         func.body.accept(self, ctx)
+        ctx.close()
 
     def visitBlock(self, block: Block, ctx: ScopeStack) -> None:
+        block_scope = Scope(ScopeKind.LOCAL)
+        ctx.open(block_scope)
         for child in block:
             child.accept(self, ctx)
+        ctx.close()
 
     def visitReturn(self, stmt: Return, ctx: ScopeStack) -> None:
         stmt.expr.accept(self, ctx)
@@ -63,13 +70,20 @@ class Namer(Visitor[ScopeStack, None]):
 
     def visitIf(self, stmt: If, ctx: ScopeStack) -> None:
         stmt.cond.accept(self, ctx)
+        # then_scope = Scope(ScopeKind.LOCAL)
+        # ctx.open(then_scope)
         stmt.then.accept(self, ctx)
+        # ctx.close()
 
         # check if the else branch exists
         if not stmt.otherwise is NULL:
+            # otherwise_scope = Scope(ScopeKind.LOCAL)
+            # ctx.open(otherwise_scope)
             stmt.otherwise.accept(self, ctx)
+            # ctx.close()
 
     def visitWhile(self, stmt: While, ctx: ScopeStack) -> None:
+        # scope
         stmt.cond.accept(self, ctx)
         ctx.openLoop()
         stmt.body.accept(self, ctx)
