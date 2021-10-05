@@ -70,17 +70,17 @@ class Namer(Visitor[ScopeStack, None]):
 
     def visitIf(self, stmt: If, ctx: ScopeStack) -> None:
         stmt.cond.accept(self, ctx)
-        then_scope = Scope(ScopeKind.LOCAL)
-        ctx.open(then_scope)
+        # then_scope = Scope(ScopeKind.LOCAL)
+        # ctx.open(then_scope)
         stmt.then.accept(self, ctx)
-        ctx.close()
+        # ctx.close()
 
         # check if the else branch exists
         if not stmt.otherwise is NULL:
-            otherwise_scope = Scope(ScopeKind.LOCAL)
-            ctx.open(otherwise_scope)
+            # otherwise_scope = Scope(ScopeKind.LOCAL)
+            # ctx.open(otherwise_scope)
             stmt.otherwise.accept(self, ctx)
-            ctx.close()
+            # ctx.close()
 
     def visitWhile(self, stmt: While, ctx: ScopeStack) -> None:
         # scope
@@ -89,14 +89,16 @@ class Namer(Visitor[ScopeStack, None]):
         stmt.body.accept(self, ctx)
         ctx.closeLoop()
 
+    def visitDoWhile(self, stmt: DoWhile, ctx: ScopeStack) -> None:
         """
-        def visitDoWhile(self, stmt: DoWhile, ctx: ScopeStack) -> None:
-
         1. Open a loop in ctx (for validity checking of break/continue)
         2. Visit body of the loop.
         3. Close the loop.
         4. Visit the condition of the loop.
         """
+
+
+    
 
     def visitBreak(self, stmt: Break, ctx: ScopeStack) -> None:
         if not ctx.inLoop():
