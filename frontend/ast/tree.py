@@ -210,7 +210,7 @@ class DoWhile(Statement):
 
 class Continue(Statement):
     """
-    AST node of continue statement.
+    AST node of continue statement. (yjz)
     """
     def __init__(self) -> None:
         super().__init__("continue")

@@ -1,10 +1,5 @@
 int main(){
-    int a = 2;
-    if (a < 3) {
-        {
-            int a = 3;
-            return a;
-        }
-        return a;
-    }
+    for (int i = 0; i < 5; i = i + 1)
+        break;
+    return 0;
 }

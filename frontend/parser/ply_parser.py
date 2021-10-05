@@ -114,6 +114,77 @@ def p_while(p):
     """
     p[0] = While(p[3], p[5])
 
+def p_do_while(p):
+    """
+    statement_matched : Do statement_matched While expression Semi
+    statement_unmatched : Do statement_unmatched While expression Semi
+    """
+    p[0] = DoWhile(p[2], p[4])
+
+
+def p_for_3(p):
+    """
+    statement_matched : For LParen expression Semi expression Semi expression RParen statement_matched
+                    | For LParen declaration Semi expression Semi expression RParen statement_matched
+    statement_unmatched : For LParen expression Semi expression Semi expression RParen statement_unmatched
+                    | For LParen declaration Semi expression Semi expression RParen statement_unmatched
+    """
+    p[0] = For(p[3], p[5], p[7], p[9])
+
+def p_for_2_1(p):
+    """
+    statement_matched : For LParen Semi expression Semi expression RParen statement_matched
+    statement_unmatched : For LParen Semi expression Semi expression RParen statement_unmatched
+    """
+    p[0] = For(None, p[4], p[6], p[8])
+
+def p_for_2_2(p):
+    """
+    statement_matched : For LParen expression Semi Semi expression RParen statement_matched
+                    | For LParen declaration Semi Semi expression RParen statement_matched
+    statement_unmatched : For LParen expression Semi Semi expression RParen statement_unmatched
+                    | For LParen declaration Semi Semi expression RParen statement_unmatched
+    """
+    p[0] = For(p[3], None, p[6], p[8])
+
+def p_for_2_3(p):
+    """
+    statement_matched : For LParen expression Semi expression Semi RParen statement_matched
+                    | For LParen declaration Semi expression Semi RParen statement_matched
+    statement_unmatched : For LParen expression Semi expression Semi RParen statement_unmatched
+                    | For LParen declaration Semi expression Semi RParen statement_unmatched
+    """
+    p[0] = For(p[3], p[5], None, p[8])
+
+def p_for_1_1(p):
+    """
+    statement_matched : For LParen expression Semi Semi RParen statement_matched
+                    | For LParen declaration Semi Semi RParen statement_matched
+    statement_unmatched : For LParen expression Semi Semi RParen statement_unmatched
+                    | For LParen declaration Semi Semi RParen statement_unmatched
+    """
+    p[0] = For(p[3], None, None, p[7])
+
+def p_for_1_2(p):
+    """
+    statement_matched : For LParen Semi expression Semi RParen statement_matched
+    statement_unmatched : For LParen Semi expression Semi RParen statement_unmatched
+    """
+    p[0] = For(None, p[4], None, p[7])
+
+def p_for_1_3(p):
+    """
+    statement_matched : For LParen Semi Semi expression RParen statement_matched
+    statement_unmatched : For LParen Semi Semi expression RParen statement_unmatched
+    """
+    p[0] = For(None, None, p[5], p[7])
+
+def p_for_0(p):
+    """
+    statement_matched : For LParen Semi Semi RParen statement_matched
+    statement_unmatched : For LParen Semi Semi RParen statement_unmatched
+    """
+    p[0] = For(None, None, None, p[6])
 
 def p_return(p):
     """
@@ -141,6 +212,12 @@ def p_break(p):
     statement_matched : Break Semi
     """
     p[0] = Break()
+
+def p_continue(p):
+    """
+    statement_matched : Continue Semi
+    """
+    p[0] = Continue()
 
 
 def p_opt_expression(p):
