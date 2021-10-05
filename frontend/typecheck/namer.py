@@ -68,9 +68,12 @@ class Namer(Visitor[ScopeStack, None]):
         """
         init_scope = Scope(ScopeKind.LOCAL)
         ctx.open(init_scope)
-        stmt.init.accept(self, ctx)
-        stmt.cond.accept(self, ctx)
-        stmt.update.accept(self, ctx)
+        if(stmt.init is not None):
+            stmt.init.accept(self, ctx)
+        if(stmt.cond is not None):
+            stmt.cond.accept(self, ctx)
+        if(stmt.update is not None):
+            stmt.update.accept(self, ctx)
         ctx.openLoop()
         stmt.body.accept(self, ctx)
         ctx.closeLoop()

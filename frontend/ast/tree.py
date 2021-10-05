@@ -186,8 +186,7 @@ class For(Statement):
         return 4
 
     def accept(self, v: Visitor[T, U], ctx: T):
-        pass
-        # return v.visitFor(self, ctx) # 
+        return v.visitFor(self, ctx)
 
 class DoWhile(Statement):
     """
@@ -195,7 +194,7 @@ class DoWhile(Statement):
     """
 
     def __init__(self, body: Statement, cond: Expression) -> None:
-        super.__init__("dowhile")
+        super().__init__("dowhile")
         self.body = body
         self.cond = cond
     
@@ -206,7 +205,7 @@ class DoWhile(Statement):
         return 2
 
     def accept(self, v: Visitor[T, U], ctx: T):
-        pass
+        return v.visitDoWhile(self, ctx)
 
 class Continue(Statement):
     """
@@ -222,7 +221,7 @@ class Continue(Statement):
         return 0
 
     def accept(self, v: Visitor[T, U], ctx: T):
-        pass
+        return v.visitContinue(self, ctx)
 
     def is_leaf(self):
         return True

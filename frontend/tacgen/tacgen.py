@@ -45,6 +45,9 @@ class TACGen(Visitor[FuncVisitor, None]):
     def visitBreak(self, stmt: Break, mv: FuncVisitor) -> None:
         mv.visitBranch(mv.getBreakLabel())
 
+    def visitContinue(self, stmt: Continue, mv: FuncVisitor) -> None:
+        mv.visitBranch(mv.getContinueLabel())
+
     def visitIdentifier(self, ident: Identifier, mv: FuncVisitor) -> None:
         """
         1. Set the 'val' attribute of ident as the temp variable of the 'symbol' attribute of ident.
@@ -125,6 +128,45 @@ class TACGen(Visitor[FuncVisitor, None]):
             mv.visitLabel(skipLabel)
             stmt.otherwise.accept(self, mv)
             mv.visitLabel(exitLabel)
+
+    def visitFor(self, stmt: For, mv: FuncVisitor) -> None:
+        beginLabel = mv.freshLabel()
+        loopLabel = mv.freshLabel()
+        breakLabel = mv.freshLabel()
+        mv.openLoop(breakLabel, loopLabel)
+
+        if(stmt.init is not None):
+            stmt.init.accept(self, mv)
+        mv.visitLabel(beginLabel)
+        if(stmt.cond is not None):
+            stmt.cond.accept(self, mv)
+            mv.visitCondBranch(tacop.CondBranchOp.BEQ, stmt.cond.getattr("val"), breakLabel)
+        stmt.body.accept(self, mv)
+
+        mv.visitLabel(loopLabel)
+        if(stmt.update is not None):
+            stmt.update.accept(self, mv)
+        mv.visitBranch(beginLabel)
+        mv.visitLabel(breakLabel)
+        mv.closeLoop()
+
+    def visitDoWhile(self, stmt: DoWhile, mv: FuncVisitor) -> None:
+        beginLabel = mv.freshLabel()
+        loopLabel = mv.freshLabel()
+        breakLabel = mv.freshLabel()
+        mv.openLoop(breakLabel, loopLabel)
+
+
+        mv.visitLabel(beginLabel)
+        stmt.body.accept(self, mv)
+
+        mv.visitLabel(loopLabel)
+        stmt.cond.accept(self, mv)
+        mv.visitCondBranch(tacop.CondBranchOp.BEQ, stmt.cond.getattr("val"), breakLabel)
+        mv.visitBranch(beginLabel)
+
+        mv.visitLabel(breakLabel)
+        mv.closeLoop()
 
     def visitWhile(self, stmt: While, mv: FuncVisitor) -> None:
         beginLabel = mv.freshLabel()

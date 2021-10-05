@@ -1,5 +1,8 @@
-int main(){
-    for (int i = 0; i < 5; i = i + 1)
-        break;
-    return 0;
+int main() {
+    int a = 1;
+    do {
+        a = a * 2;
+    } while(a < 11);
+
+    return a;
 }
