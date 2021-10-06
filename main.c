@@ -1,8 +1,2 @@
-int main() {
-    int a = 1;
-    do {
-        a = a * 2;
-    } while(a < 11);
-
-    return a;
-}
+int func(int x, int y) { return x + y; }
+int main() { return func(1, 2); }

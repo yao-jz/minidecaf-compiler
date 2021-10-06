@@ -21,7 +21,7 @@ def accept(visitor: Visitor[T, U], ctx: T) -> Callable[[Node], Optional[U]]:
 
 class Visitor(Protocol[T, U]):  # type: ignore
     def visitOther(self, node: Node, ctx: T) -> None:
-        return None
+        raise NotImplementedError
 
     def visitNULL(self, that: NullType, ctx: T) -> Optional[U]:
         return self.visitOther(that, ctx)
@@ -30,6 +30,9 @@ class Visitor(Protocol[T, U]):  # type: ignore
         return self.visitOther(that, ctx)
 
     def visitBlock(self, that: Block, ctx: T) -> Optional[Sequence[Optional[U]]]:
+        return self.visitOther(that, ctx)
+
+    def visitParameter(self, that: Parameter, ctx: T) -> Optional[Sequence[Optional[U]]]:
         return self.visitOther(that, ctx)
 
     def visitFunction(self, that: Function, ctx: T) -> Optional[U]:
@@ -46,6 +49,7 @@ class Visitor(Protocol[T, U]):  # type: ignore
 
     def visitBreak(self, that: Break, ctx: T) -> Optional[U]:
         return self.visitOther(that, ctx)
+
 
     def visitFor(self, that: For, ctx: T) -> Optional[U]:
         return self.visitOther(that, ctx)

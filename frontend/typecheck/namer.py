@@ -94,6 +94,7 @@ class Namer(Visitor[ScopeStack, None]):
         stmt.body.accept(self, ctx)
         ctx.closeLoop()
 
+
     def visitDoWhile(self, stmt: DoWhile, ctx: ScopeStack) -> None:
         """
         1. Open a loop in ctx (for validity checking of break/continue)

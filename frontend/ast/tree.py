@@ -65,7 +65,7 @@ class Program(ListNode["Function"]):
 
 class Function(Node):
     """
-    AST node that represents a function.
+    AST node that represents a function. (yjz add parameter)
     """
 
     def __init__(
@@ -73,21 +73,34 @@ class Function(Node):
         ret_t: TypeLiteral,
         ident: Identifier,
         body: Block,
+        parameters: Parameter = None,
     ) -> None:
         super().__init__("function")
         self.ret_t = ret_t
         self.ident = ident
         self.body = body
+        self.parameters = parameters
 
     def __getitem__(self, key: int) -> Node:
-        return (
-            self.ret_t,
-            self.ident,
-            self.body,
-        )[key]
+        if self.parameters is None:
+            return (
+                self.ret_t,
+                self.ident,
+                self.body,
+            )[key]
+        else:
+            return (
+                self.ret_t,
+                self.ident,
+                self.body,
+                self.parameters,
+            )[key]
 
     def __len__(self) -> int:
-        return 3
+        if self.parameters is None:
+            return 3
+        else:
+            return 4
 
     def accept(self, v: Visitor[T, U], ctx: T):
         return v.visitFunction(self, ctx)
@@ -246,6 +259,45 @@ class Break(Statement):
     def is_leaf(self):
         return True
 
+
+class Postfix(Statement):
+    """
+    AST node of postfix. (yjz)
+    """
+    def __init__(self, ident: Identifier, exprList: ExpressionList):
+        super().__init__("postfix")
+        self.ident = ident
+        self.exprList = exprList
+
+    def __getitem__(self, key: int) -> Node:
+        return (self.ident, self.exprList)[key]
+
+    def __len__(self) -> int:
+        return 2
+
+    def accept(self, v: Visitor[T, U], ctx: T):
+        return v.visitPostfix(self, ctx)    # TODO: support
+
+class ExpressionList(ListNode["Expression"]):
+    """
+    AST node of expression list. (yjz)
+    """
+    def __init__(self, *children: Union[Expression]) -> None:
+        super().__init__("expressionlist", list(children))
+
+    def accept(self, v: Visitor[T, U], ctx: T):
+        return v.visitExpressionList(self, ctx) # TODO: support
+
+class Parameter(ListNode["Declaration"]):
+    """
+    AST node of parameter. (yjz)
+    """
+
+    def __init__(self, *children: Union[Declaration]) -> None:
+        super().__init__("parameter", list(children))
+
+    def accept(self, v: Visitor[T, U], ctx: T):
+        return v.visitParameter(self, ctx)
 
 class Block(Statement, ListNode[Union["Statement", "Declaration"]]):
     """

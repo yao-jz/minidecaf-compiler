@@ -41,10 +41,17 @@ def p_empty(p: yacc.YaccProduction):
 
 def p_program(p):
     """
-    program : function
+    program : program function
     """
-    p[0] = Program(p[1])
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
 
+def p_program_empty(p):
+    """
+    program : empty
+    """
+    p[0] = Program()
 
 def p_type(p):
     """
@@ -52,13 +59,43 @@ def p_type(p):
     """
     p[0] = TInt()
 
-
 def p_function_def(p):
     """
     function : type Identifier LParen RParen LBrace block RBrace
     """
     p[0] = Function(p[1], p[2], p[6])
 
+def p_function_para_def(p):
+    """
+    function : type Identifier LParen parameter RParen LBrace block RBrace
+    """
+    p[0] = Function(p[1], p[2], p[7], p[4])
+
+def p_parameter(p):
+    """
+    parameter : parameter parameter_item
+    """
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
+
+def p_parameter_empty(p):
+    """
+    parameter : empty
+    """
+    p[0] = Parameter()
+
+def p_parameter_item1(p):
+    """
+    parameter_item : Comma declaration
+    """
+    p[0] = p[2]
+
+def p_parameter_item2(p):
+    """
+    parameter_item : declaration
+    """
+    p[0] = p[1]
 
 def p_block(p):
     """
@@ -267,6 +304,37 @@ def p_expression_precedence(p):
     """
     p[0] = p[1]
 
+def p_postfix(p):
+    """
+    postfix : Identifier LParen expression_list RParen
+    """
+    p[0] = Postfix(p[1], p[3])
+
+def p_expression_list(p):
+    """
+    expression_list : expression_list expression_item
+    """
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
+
+def p_expression_list_empty(p):
+    """
+    expression_list : empty
+    """
+    p[0] = ExpressionList()
+
+def p_expression_item1(p):
+    """
+    expression_item : Comma expression
+    """
+    p[0] = p[2]
+
+def p_expression_item2(p):
+    """
+    expression_item : expression
+    """
+    p[0] = p[1]
 
 def p_unary_expression(p):
     """
