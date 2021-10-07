@@ -136,6 +136,40 @@ class Binary(TACInstr):
         v.visitBinary(self)
 
 
+class Param(TACInstr):
+    def __init__(self, src: Temp) -> None:
+        super().__init__(InstrKind.SEQ, [], [src], None)
+        self.src = src
+
+    def __str__(self) -> str:
+        return "PARAM " + str(self.src)
+
+    def accept(self, v: TACVisitor) -> None:
+        v.visitParam(self)
+
+class Call(TACInstr):
+    def __init__(self, target: Label) -> None:
+        super().__init__(InstrKind.JMP, [], [], target)
+        self.target = target
+
+    def __str__(self) -> str:
+        return "CALL " + str(self.target)
+
+    def accept(self, v: TACVisitor) -> None:
+        v.visitCall(self)
+
+class CallAssignment(TACInstr):
+    def __init__(self, target: Label, dst: Temp) -> None:
+        super().__init__(InstrKind.JMP, [dst], [], target)
+        self.target = target
+        self.dst = dst
+
+    def __str__(self) -> str:
+        return str(self.dst) + " = " + "CALL " + str(self.target)
+
+    def accept(self, v: TACVisitor) -> None:
+        v.visitCallAssignment(self)
+
 # Branching instruction.
 class Branch(TACInstr):
     def __init__(self, target: Label) -> None:

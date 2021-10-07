@@ -38,25 +38,56 @@ class Namer(Visitor[ScopeStack, None]):
         # Check if the 'main' function is missing
         if not program.hasMainFunc():
             raise DecafNoMainFuncError
-        program.mainFunc().accept(self, ctx)
+        for child in program:
+            child.accept(self, ctx)
         
 
     def visitFunction(self, func: Function, ctx: ScopeStack) -> None:
-        main_scope = Scope(ScopeKind.LOCAL)
-        ctx.open(main_scope)
-        func.body.accept(self, ctx)
-        ctx.close()
+        ok = ctx.findConflict(func.ident.value)
+        if(not ok):
+            new_symbol = FuncSymbol(func.ident.value, func.ret_t.type, ctx.currentScope())
+            if func.parameters is not None:
+                for child in func.parameters:
+                    new_symbol.addParaType(child.var_t.type)
+            func.setattr("symbol", new_symbol)
+            ctx.declare(new_symbol)
+            func.body.accept(self, ctx, func.parameters)
+        else:
+            raise DecafDeclConflictError()
 
-    def visitBlock(self, block: Block, ctx: ScopeStack) -> None:
+    def visitParameter(self, para: Parameter, ctx: ScopeStack) -> None:
+        for child in para:
+            child.accept(self, ctx)
+
+    def visitPostfix(self, postfix: Postfix, ctx: ScopeStack) -> None:
+        func = ctx.lookup(postfix.ident.value)
+        if(func is None):   # no function identifier found
+            raise DecafBadFuncCallError()
+        # check the num and type of parameters
+        if postfix.exprList.getNumChildren() == len(func.para_type):
+            pass    # TODO: check the type of the parameters
+        else:
+            raise DecafBadFuncCallError()
+        
+        postfix.ident.accept(self, ctx)
+        postfix.exprList.accept(self, ctx)
+
+    def visitExpressionList(self, exprList: ExpressionList, ctx: ScopeStack) -> None:
+        for child in exprList:
+            child.accept(self, ctx)
+    
+    def visitBlock(self, block: Block, ctx: ScopeStack, para: Parameter = None) -> None:
         block_scope = Scope(ScopeKind.LOCAL)
         ctx.open(block_scope)
+        if para is not None:
+            for child in para:
+                child.accept(self, ctx)
         for child in block:
             child.accept(self, ctx)
         ctx.close()
 
     def visitReturn(self, stmt: Return, ctx: ScopeStack) -> None:
         stmt.expr.accept(self, ctx)
-
 
     def visitFor(self, stmt: For, ctx: ScopeStack) -> None:
         """

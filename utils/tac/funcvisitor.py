@@ -36,6 +36,19 @@ class FuncVisitor:
     def getUsedTemp(self) -> int:
         return self.nextTempId
 
+    def visitParam(self, src: Temp) -> None:
+        self.func.add(Param(src))
+
+    def visitCall(self, target: Label) -> None:
+        temp = self.freshTemp()
+        self.func.add(Call(target))
+        return temp
+
+    def visitCallAssignment(self, target: Label) -> None:
+        temp = self.freshTemp()
+        self.func.add(CallAssignment(target, temp))
+        return temp
+
     # In fact, the following methods can be named 'appendXXX' rather than 'visitXXX'. E.g., by calling 'visitAssignment', you add an assignment instruction at the end of current function.
     def visitAssignment(self, dst: Temp, src: Temp) -> Temp:
         self.func.add(Assign(dst, src))

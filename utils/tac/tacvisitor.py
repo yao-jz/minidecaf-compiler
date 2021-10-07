@@ -1,4 +1,5 @@
 from __future__ import annotations
+from re import S
 
 from .tacinstr import *
 
@@ -32,4 +33,13 @@ class TACVisitor:
         self.visitOther(instr)
 
    def visitMark(self, instr: Mark) -> None:
+        self.visitOther(instr)
+
+   def visitParam(self, instr: Param) -> None:
+        self.visitOther(instr)
+
+   def visitCall(self, instr: Call) -> None:
+        self.visitOther(instr)
+
+   def visitCallAssignment(self, instr: CallAssignment) -> None:
         self.visitOther(instr)

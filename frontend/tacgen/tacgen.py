@@ -18,23 +18,59 @@ The TAC generation phase: translate the abstract syntax tree into three-address 
 
 class TACGen(Visitor[FuncVisitor, None]):
     def __init__(self) -> None:
-        pass
+        self.program = None
+        self.pw = None
 
     # Entry of this phase
     def transform(self, program: Program) -> TACProg:
+        self.program = program
+        funcs = program.functions()
+        self.pw = ProgramWriter([k for k in funcs.keys()])
         mainFunc = program.mainFunc()
-        pw = ProgramWriter(["main"])
         # The function visitor of 'main' is special.
-        mv = pw.visitMainFunc()
+        mv = self.pw.visitMainFunc()
 
         mainFunc.body.accept(self, mv)
         # Remember to call mv.visitEnd after the translation a function.
         mv.visitEnd()
-
+        # for k in funcs.keys():
+        #     if k == "main":
+        #         continue
+        #     else:
+        #         thisFunc = funcs[k]
+        #         fv = pw.visitFunc(k, len(thisFunc.parameters.children))
+        #         thisFunc.body.accept(self, fv)
+        #         fv.visitEnd()
         # Remember to call pw.visitEnd before finishing the translation phase.
-        return pw.visitEnd()
+        return self.pw.visitEnd()
 
-    def visitBlock(self, block: Block, mv: FuncVisitor) -> None:
+
+    def visitPostfix(self, postfix: Postfix, mv: FuncVisitor) -> None:
+        for child in postfix.exprList:
+            child.accept(self, mv)
+            mv.visitParam(child.getattr("val"))
+        temp_list = [child.getattr("val") for child in postfix.exprList.children]
+        func_list = self.program.functions()
+        thisFunc = func_list[postfix.ident.value]
+        now_temp = 0
+        for child in thisFunc.parameters:
+            child_symbol = child.getattr("symbol")
+            child_symbol.temp = temp_list[now_temp]
+            child.setattr("symbol", child_symbol)
+            now_temp += 1
+        fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
+        fv.nextTempId = now_temp
+        thisFunc.body.accept(self, fv)
+        fv.visitEnd()
+        mv.nextTempId = fv.nextTempId
+        postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
+
+    def visitExpressionList(self, exprList: ExpressionList, mv: FuncVisitor) -> None:
+        for child in exprList:
+            child.accept(self, mv)
+
+
+    def visitBlock(self, block: Block, mv: FuncVisitor, para: Parameter = None) -> None:
         for child in block:
             child.accept(self, mv)
 

@@ -285,6 +285,9 @@ class ExpressionList(ListNode["Expression"]):
     def __init__(self, *children: Union[Expression]) -> None:
         super().__init__("expressionlist", list(children))
 
+    def getNumChildren(self):
+        return len(self.children)
+
     def accept(self, v: Visitor[T, U], ctx: T):
         return v.visitExpressionList(self, ctx) # TODO: support
 
@@ -295,6 +298,9 @@ class Parameter(ListNode["Declaration"]):
 
     def __init__(self, *children: Union[Declaration]) -> None:
         super().__init__("parameter", list(children))
+
+    def getNumChildren(self):
+        return len(self.children)
 
     def accept(self, v: Visitor[T, U], ctx: T):
         return v.visitParameter(self, ctx)
@@ -307,8 +313,8 @@ class Block(Statement, ListNode[Union["Statement", "Declaration"]]):
     def __init__(self, *children: Union[Statement, Declaration]) -> None:
         super().__init__("block", list(children))
 
-    def accept(self, v: Visitor[T, U], ctx: T):
-        return v.visitBlock(self, ctx)
+    def accept(self, v: Visitor[T, U], ctx: T, para: Parameter = None):
+        return v.visitBlock(self, ctx, para)
 
     def is_block(self) -> bool:
         return True
