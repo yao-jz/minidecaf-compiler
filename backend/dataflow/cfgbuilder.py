@@ -38,7 +38,7 @@ class CFGBuilder:
                         kind = None
                     bb = BasicBlock(kind, len(self.bbs), self.currentBBLabel, self.buf)
                     self.save(bb)
-
+        
         if not len(self.buf) == 0:
             raise IllegalArgumentException
 

@@ -16,8 +16,10 @@ class Asm:
 
     def transform(self, prog: TACProg):
         analyzer = LivenessAnalyzer()
-
         for func in prog.funcs:
+            # 尝试先弄main函数
+            if(func.entry.name != "main"):
+                continue
             pair = self.emitter.selectInstr(func)
             builder = CFGBuilder()
             cfg: CFG = builder.buildFrom(pair[0])

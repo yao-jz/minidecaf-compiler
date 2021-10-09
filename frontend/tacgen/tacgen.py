@@ -33,15 +33,6 @@ class TACGen(Visitor[FuncVisitor, None]):
         mainFunc.body.accept(self, mv)
         # Remember to call mv.visitEnd after the translation a function.
         mv.visitEnd()
-        # for k in funcs.keys():
-        #     if k == "main":
-        #         continue
-        #     else:
-        #         thisFunc = funcs[k]
-        #         fv = pw.visitFunc(k, len(thisFunc.parameters.children))
-        #         thisFunc.body.accept(self, fv)
-        #         fv.visitEnd()
-        # Remember to call pw.visitEnd before finishing the translation phase.
         return self.pw.visitEnd()
 
 
@@ -51,6 +42,7 @@ class TACGen(Visitor[FuncVisitor, None]):
             mv.visitParam(child.getattr("val"))
         temp_list = [child.getattr("val") for child in postfix.exprList.children]
         func_list = self.program.functions()
+
         thisFunc = func_list[postfix.ident.value]
         now_temp = 0
         for child in thisFunc.parameters:
@@ -62,13 +54,13 @@ class TACGen(Visitor[FuncVisitor, None]):
         fv.nextTempId = now_temp
         thisFunc.body.accept(self, fv)
         fv.visitEnd()
+        
         mv.nextTempId = fv.nextTempId
         postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
 
     def visitExpressionList(self, exprList: ExpressionList, mv: FuncVisitor) -> None:
         for child in exprList:
             child.accept(self, mv)
-
 
     def visitBlock(self, block: Block, mv: FuncVisitor, para: Parameter = None) -> None:
         for child in block:

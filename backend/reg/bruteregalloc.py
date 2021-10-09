@@ -12,6 +12,7 @@ from utils.tac.holeinstr import HoleInstr
 from utils.tac.reg import Reg
 from utils.tac.temp import Temp
 
+import sys
 """
 BruteRegAlloc: one kind of RegAlloc
 
@@ -37,7 +38,6 @@ class BruteRegAlloc(RegAlloc):
 
     def accept(self, graph: CFG, info: SubroutineInfo) -> None:
         subEmitter = self.emitter.emitSubroutine(info)
-        # print(graph.links)
         can_be_visited = [0]
         for bb in graph.iterator():
             if(not bb.id in can_be_visited):
@@ -46,9 +46,11 @@ class BruteRegAlloc(RegAlloc):
                 can_be_visited.append(vis)
             # you need to think more here
             # maybe we don't need to alloc regs for all the basic blocks
+            print("alloc for function: ", info.funcLabel.name)
             if bb.label is not None:
                 subEmitter.emitLabel(bb.label)
             self.localAlloc(bb, subEmitter)
+
         subEmitter.emitEnd()
 
     def bind(self, temp: Temp, reg: Reg):

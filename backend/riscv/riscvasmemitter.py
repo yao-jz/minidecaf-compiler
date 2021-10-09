@@ -1,6 +1,7 @@
 from typing import Sequence, Tuple
 
 from backend.asmemitter import AsmEmitter
+# from frontend.ast.node import T
 from utils.error import IllegalArgumentException
 from utils.label.label import Label, LabelKind
 from utils.riscv import Riscv
@@ -11,6 +12,7 @@ from utils.tac.tacvisitor import TACVisitor
 
 from ..subroutineemitter import SubroutineEmitter
 from ..subroutineinfo import SubroutineInfo
+import sys
 
 """
 RiscvAsmEmitter: an AsmEmitter for RiscV
@@ -35,15 +37,13 @@ class RiscvAsmEmitter(AsmEmitter):
     # transform tac instrs to RiscV instrs
     # collect some info which is saved in SubroutineInfo for SubroutineEmitter
     def selectInstr(self, func: TACFunc) -> tuple[list[str], SubroutineInfo]:
-
         selector: RiscvAsmEmitter.RiscvInstrSelector = (
             RiscvAsmEmitter.RiscvInstrSelector(func.entry)
         )
+
         for instr in func.getInstrSeq():
             instr.accept(selector)
         info = SubroutineInfo(func.entry)
-        # for i in selector.seq:
-        #     print(i)
 
         return (selector.seq, info)
 
@@ -89,6 +89,7 @@ class RiscvAsmEmitter(AsmEmitter):
         def visitAssign(self, instr: Assign) -> None:
             self.seq.append(Riscv.Move(instr.dst, instr.src))
 
+        
 
         # in step9, you need to think about how to pass the parameters and how to store and restore callerSave regs
         # in step11, you need to think about how to store the array 
@@ -101,7 +102,7 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
         super().__init__(emitter, info)
         
         # + 4 is for the RA reg 
-        self.nextLocalOffset = 4 * len(Riscv.CalleeSaved) + 4
+        self.nextLocalOffset = 4 * len(Riscv.CalleeSaved) + 8
         
         # the buf which stored all the NativeInstrs in this function
         self.buf: list[NativeInstr] = []
@@ -116,7 +117,7 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
 
     def emitComment(self, comment: str) -> None:
         # you can add some log here to help you debug
-        # print(comment)
+        print(comment)
         pass
     
     # store some temp to stack
@@ -162,6 +163,16 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
                 self.printer.printInstr(
                     Riscv.NativeStoreWord(Riscv.CalleeSaved[i], Riscv.SP, 4 * i)
                 )
+        # save RA and FP
+        # TODO: calculate offset for RA and FP
+        if Riscv.RA.isUsed():
+            self.printer.printInstr(
+                Riscv.NativeStoreWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
+            )
+        if Riscv.FP.isUsed():
+            self.printer.printInstr(
+                Riscv.NativeStoreWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
+            )
 
         self.printer.printComment("end of prologue")
         self.printer.println("")
@@ -169,7 +180,9 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
         self.printer.printComment("start of body")
 
         # in step9, you need to think about how to pass the parameters here
-        # you can use the stack or regs
+        # you can use the stack or regs (use stack)
+        # TODO: pass the parameters
+
 
         # using asmcodeprinter to output the RiscV code
         for instr in self.buf:
@@ -187,6 +200,14 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
             if Riscv.CalleeSaved[i].isUsed():
                 self.printer.printInstr(
                     Riscv.NativeLoadWord(Riscv.CalleeSaved[i], Riscv.SP, 4 * i)
+                )
+        if Riscv.RA.isUsed():
+            self.printer.printInstr(
+                    Riscv.NativeLoadWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
+                )
+        if Riscv.FP.isUsed():
+            self.printer.printInstr(
+                    Riscv.NativeLoadWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
                 )
 
         self.printer.printInstr(Riscv.SPAdd(self.nextLocalOffset))
