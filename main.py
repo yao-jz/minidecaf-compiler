@@ -51,7 +51,7 @@ def step_tac(p: Program):
 
     tacgen = TACGen()
     tac_prog = tacgen.transform(p)
-    tac_prog.printTo()
+    # tac_prog.printTo()
     return tac_prog
 
 

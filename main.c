@@ -1,6 +1,12 @@
-int func(int x, int y) { 
-	return x + y; 
+int fib(int n) {
+    if(n == 0) {
+		return 0;
+	}
+	return fib(n-1);
+	
 }
-int main() { 
-	return func(1, 2); 
+
+int main() {
+    int n = 5;
+    return fib(n);
 }

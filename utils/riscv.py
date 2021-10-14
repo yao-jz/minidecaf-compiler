@@ -176,6 +176,32 @@ class Riscv:
         def __str__(self) -> str:
             return "j " + str(self.target)
 
+    class Param(TACInstr):
+        def __init__(self, src: Temp) -> None:
+            super().__init__(InstrKind.SEQ, [], [src], None)
+            self.src = src
+
+        def __str__(self) -> str:
+            return ""
+
+    class ParamDecl(TACInstr):
+        def __init__(self, dst: Temp) -> None:
+            super().__init__(InstrKind.SEQ, [dst], [], None)
+            self.dst = dst
+
+        def __str__(self) -> str:
+            return ""
+
+    class CallAssignment(TACInstr):
+        def __init__(self, dst: Temp, target: Label, paratemp: list[Temp] = []) -> None:
+            super().__init__(InstrKind.JMP, [dst], paratemp, target)
+            self.target = target
+            self.dst = dst
+            self.paratemp = paratemp
+
+        def __str__(self) -> str:
+            return "call " + str(self.target)
+
     class SPAdd(NativeInstr):
         def __init__(self, offset: int) -> None:
             super().__init__(InstrKind.SEQ, [Riscv.SP], [Riscv.SP], None)

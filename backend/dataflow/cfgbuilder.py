@@ -11,10 +11,11 @@ CFGBuilder: from the sequence of instrs to build a control flow graph
 
 
 class CFGBuilder:
-    def __init__(self) -> None:
+    def __init__(self, func_list = None) -> None:
         self.bbs: list[BasicBlock] = []
         self.buf: list[Loc] = []
         self.currentBBLabel = None
+        self.func_list = func_list
         self.labelsToBBs = {}
 
     def buildFrom(self, seq: list[TACInstr]):
@@ -47,9 +48,18 @@ class CFGBuilder:
         while now < len(self.bbs):
             bb: BasicBlock = self.bbs[now]
             now += 1
-
+            # for loc in bb.locs:
+            #     print(loc.instr)
+            # print(self.labelsToBBs)
+            # print(bb.getLastInstr().label)
             if bb.kind is BlockKind.END_BY_JUMP:
-                if self.labelsToBBs.get(bb.getLastInstr().label) is None:
+                # if (self.labelsToBBs.get(bb.getLastInstr().label) is None) and bb.getLastInstr().label != None:
+                #     continue # 对不对？
+                # if (self.labelsToBBs.get(bb.getLastInstr().label) is None):
+                if(bb.getLastInstr().label in self.func_list): # 处理函数，默认一定会返回
+                    edges.append((bb.id, self.bbs[now].id))
+                    continue
+                if (self.labelsToBBs.get(bb.getLastInstr().label) is None):
                     raise NullPointerException
                 edges.append((bb.id, self.labelsToBBs.get(bb.getLastInstr().label)))
             elif bb.kind is BlockKind.END_BY_COND_JUMP:
@@ -63,21 +73,6 @@ class CFGBuilder:
             else:
                 if now < len(self.bbs):
                     edges.append((bb.id, bb.id + 1))
-
-        # 去除不可达边
-        # new_edge = []
-        # can_be_visited = [0]
-        # for (i, j) in edges:
-        #     if(i in can_be_visited):
-        #         can_be_visited.append(j)
-        #         new_edge.append((i, j))
-        # edges = new_edge
-        # new_bbs = []
-        # for i in self.bbs:
-        #     if(i.id in can_be_visited):
-        #         new_bbs.append(i)
-        # self.bbs = new_bbs
-
         return CFG(self.bbs, edges)
 
     def save(self, bb: BasicBlock):

@@ -20,6 +20,7 @@ class TACGen(Visitor[FuncVisitor, None]):
     def __init__(self) -> None:
         self.program = None
         self.pw = None
+        self.handle_func = []
 
     # Entry of this phase
     def transform(self, program: Program) -> TACProg:
@@ -42,20 +43,29 @@ class TACGen(Visitor[FuncVisitor, None]):
             mv.visitParam(child.getattr("val"))
         temp_list = [child.getattr("val") for child in postfix.exprList.children]
         func_list = self.program.functions()
-
-        thisFunc = func_list[postfix.ident.value]
-        now_temp = 0
-        for child in thisFunc.parameters:
-            child_symbol = child.getattr("symbol")
-            child_symbol.temp = temp_list[now_temp]
-            child.setattr("symbol", child_symbol)
-            now_temp += 1
-        fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
-        fv.nextTempId = now_temp
-        thisFunc.body.accept(self, fv)
-        fv.visitEnd()
         
-        mv.nextTempId = fv.nextTempId
+        thisFunc = func_list[postfix.ident.value]
+        if not thisFunc.ident.value in self.handle_func:
+            self.handle_func.append(thisFunc.ident.value)
+            now_temp = 0
+            if thisFunc.parameters is not None:
+                for child in thisFunc.parameters:
+                    child_symbol = child.getattr("symbol")
+                    child_symbol.temp = temp_list[now_temp]
+                    child.setattr("symbol", child_symbol)
+                    now_temp += 1
+            if not hasattr(thisFunc.parameters, "children"):
+                fv = self.pw.visitFunc(postfix.ident.value, 0)
+            else:
+                fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
+            fv.nextTempId = now_temp
+            if thisFunc.parameters is not None:
+                for child in thisFunc.parameters:
+                    fv.visitParamDecl(child.getattr("symbol").temp)
+            thisFunc.body.accept(self, fv)
+            fv.visitEnd()
+            
+            mv.nextTempId = fv.nextTempId
         postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
 
     def visitExpressionList(self, exprList: ExpressionList, mv: FuncVisitor) -> None:
@@ -80,6 +90,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         1. Set the 'val' attribute of ident as the temp variable of the 'symbol' attribute of ident.
         """
+        
         ident.setattr("val", ident.getattr("symbol").temp)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
@@ -108,6 +119,16 @@ class TACGen(Visitor[FuncVisitor, None]):
             decl.setattr("symbol", symbol)
             mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         elif(type(decl.init_expr) == ConditionExpression):
+            decl.init_expr.accept(self, mv)
+            symbol.temp = mv.freshTemp()
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
+        elif(type(decl.init_expr) == Binary):
+            decl.init_expr.accept(self, mv)
+            symbol.temp = mv.freshTemp()
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
+        elif(type(decl.init_expr) == Postfix):
             decl.init_expr.accept(self, mv)
             symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)

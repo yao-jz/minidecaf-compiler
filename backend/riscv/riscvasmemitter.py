@@ -44,12 +44,12 @@ class RiscvAsmEmitter(AsmEmitter):
         for instr in func.getInstrSeq():
             instr.accept(selector)
         info = SubroutineInfo(func.entry)
-
+        # sys.exit(0)
         return (selector.seq, info)
 
     # use info to construct a RiscvSubroutineEmitter
-    def emitSubroutine(self, info: SubroutineInfo):
-        return RiscvSubroutineEmitter(self, info)
+    def emitSubroutine(self, info: SubroutineInfo, numArgs: int):
+        return RiscvSubroutineEmitter(self, info, numArgs)
 
     # return all the string stored in asmcodeprinter
     def emitEnd(self):
@@ -59,6 +59,7 @@ class RiscvAsmEmitter(AsmEmitter):
         def __init__(self, entry: Label) -> None:
             self.entry = entry
             self.seq = []
+            self.paratemp = []  # 记录下次函数调用的temp，函数调用后清空
 
         # in step11, you need to think about how to deal with globalTemp in almost all the visit functions. 
         def visitReturn(self, instr: Return) -> None:
@@ -89,7 +90,17 @@ class RiscvAsmEmitter(AsmEmitter):
         def visitAssign(self, instr: Assign) -> None:
             self.seq.append(Riscv.Move(instr.dst, instr.src))
 
-        
+        def visitCallAssignment(self, instr: CallAssignment) -> None:
+            self.seq.append(Riscv.CallAssignment(instr.dst, instr.target, self.paratemp))
+            self.seq.append(Riscv.Move(instr.dst, Riscv.A0))
+            self.paratemp = []
+            
+        def visitParam(self, instr: Param) -> None:
+            self.paratemp.append(instr.src)
+            self.seq.append(Riscv.Param(instr.src))
+
+        def visitParamDecl(self, instr: ParamDecl) -> None:
+            self.seq.append(Riscv.ParamDecl(instr.dst))
 
         # in step9, you need to think about how to pass the parameters and how to store and restore callerSave regs
         # in step11, you need to think about how to store the array 
@@ -98,11 +109,12 @@ RiscvAsmEmitter: an SubroutineEmitter for RiscV
 """
 
 class RiscvSubroutineEmitter(SubroutineEmitter):
-    def __init__(self, emitter: RiscvAsmEmitter, info: SubroutineInfo) -> None:
+    def __init__(self, emitter: RiscvAsmEmitter, info: SubroutineInfo, numArgs: int) -> None:
         super().__init__(emitter, info)
         
-        # + 4 is for the RA reg 
-        self.nextLocalOffset = 4 * len(Riscv.CalleeSaved) + 8
+        self.numArgs = numArgs
+        # + 8 is for the RA reg and BP reg and 4 * numArgs is for parameters
+        self.nextLocalOffset = 4 * len(Riscv.CalleeSaved) + 8 + 4 * numArgs
         
         # the buf which stored all the NativeInstrs in this function
         self.buf: list[NativeInstr] = []
@@ -110,19 +122,23 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
         # from temp to int
         # record where a temp is stored in the stack
         self.offsets = {}
+        self.paraReg = []
 
         self.printer.printLabel(info.funcLabel)
-
+       
         # in step9, step11 you can compute the offset of local array and parameters here
+
+    def addParaRegs(self, reg: Reg):
+        self.paraReg.append(reg)
 
     def emitComment(self, comment: str) -> None:
         # you can add some log here to help you debug
-        print(comment)
+        # print(comment)
         pass
     
     # store some temp to stack
     # usually happen when reaching the end of a basicblock
-    # in step9, you need to think about the fuction parameters here
+    # in step9, you need to think about the function parameters here
     def emitStoreToStack(self, src: Reg) -> None:
         if src.temp.index not in self.offsets:
             self.offsets[src.temp.index] = self.nextLocalOffset
@@ -165,14 +181,17 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
                 )
         # save RA and FP
         # TODO: calculate offset for RA and FP
-        if Riscv.RA.isUsed():
-            self.printer.printInstr(
-                Riscv.NativeStoreWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
-            )
-        if Riscv.FP.isUsed():
-            self.printer.printInstr(
-                Riscv.NativeStoreWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
-            )
+        # if Riscv.RA.isUsed():
+        self.printer.printInstr(
+            Riscv.NativeStoreWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
+        )
+        # if Riscv.FP.isUsed():
+        self.printer.printInstr(
+            Riscv.NativeStoreWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
+        )
+
+        # if(self.numArgs > 0):
+
 
         self.printer.printComment("end of prologue")
         self.printer.println("")
@@ -182,7 +201,10 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
         # in step9, you need to think about how to pass the parameters here
         # you can use the stack or regs (use stack)
         # TODO: pass the parameters
-
+        for index in range(len(self.paraReg)):
+            self.printer.printInstr(
+                Riscv.NativeLoadWord(self.paraReg[index], Riscv.SP, self.nextLocalOffset + index * 4)
+            )
 
         # using asmcodeprinter to output the RiscV code
         for instr in self.buf:
@@ -201,14 +223,14 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
                 self.printer.printInstr(
                     Riscv.NativeLoadWord(Riscv.CalleeSaved[i], Riscv.SP, 4 * i)
                 )
-        if Riscv.RA.isUsed():
-            self.printer.printInstr(
-                    Riscv.NativeLoadWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
-                )
-        if Riscv.FP.isUsed():
-            self.printer.printInstr(
-                    Riscv.NativeLoadWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
-                )
+        # if Riscv.RA.isUsed():
+        self.printer.printInstr(
+                Riscv.NativeLoadWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
+            )
+        # if Riscv.FP.isUsed():
+        self.printer.printInstr(
+                Riscv.NativeLoadWord(Riscv.FP, Riscv.SP, 4 * len(Riscv.CalleeSaved) + 4)
+            )
 
         self.printer.printInstr(Riscv.SPAdd(self.nextLocalOffset))
         self.printer.printComment("end of epilogue")

@@ -136,6 +136,17 @@ class Binary(TACInstr):
         v.visitBinary(self)
 
 
+class ParamDecl(TACInstr):
+    def __init__(self, dst: Temp) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [], None)
+        self.dst = dst
+    
+    def __str__(self):
+        return ""
+
+    def accept(self, v: TACVisitor) -> None:
+        v.visitParamDecl(self)
+
 class Param(TACInstr):
     def __init__(self, src: Temp) -> None:
         super().__init__(InstrKind.SEQ, [], [src], None)

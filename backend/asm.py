@@ -16,14 +16,29 @@ class Asm:
 
     def transform(self, prog: TACProg):
         analyzer = LivenessAnalyzer()
+        new_funcs = []
+        func_list = []
+        # for func in prog.funcs:
+        #     new_funcs.append(func)
+        # for func in new_funcs:
         for func in prog.funcs:
-            # 尝试先弄main函数
-            if(func.entry.name != "main"):
-                continue
+            func_list.append(func.entry.name)
+            # print(type(func))
+            ## 尝试先弄main函数
+            # if(func.entry.name != "main"):
+            #     continue
             pair = self.emitter.selectInstr(func)
-            builder = CFGBuilder()
+            builder = CFGBuilder(func_list)
             cfg: CFG = builder.buildFrom(pair[0])
             analyzer.accept(cfg)
-            self.regAlloc.accept(cfg, pair[1])
-
+            self.regAlloc.accept(cfg, pair[1], func.numArgs)
+        # for func in prog.funcs:
+        #     # 然后弄其他函数
+        #     if(func.entry.name == "main"):
+        #         continue
+        #     pair = self.emitter.selectInstr(func)
+        #     builder = CFGBuilder()
+        #     cfg: CFG = builder.buildFrom(pair[0])
+        #     analyzer.accept(cfg)
+        #     self.regAlloc.accept(cfg, pair[1])
         return self.emitter.emitEnd()

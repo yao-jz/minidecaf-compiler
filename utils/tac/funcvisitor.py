@@ -36,7 +36,8 @@ class FuncVisitor:
     def getUsedTemp(self) -> int:
         return self.nextTempId
 
-
+    def visitParamDecl(self, src: Temp) -> None:
+        self.func.add(ParamDecl(src))
 
     def visitParam(self, src: Temp) -> None:
         self.func.add(Param(src))
