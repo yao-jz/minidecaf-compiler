@@ -47,18 +47,19 @@ class TACGen(Visitor[FuncVisitor, None]):
         thisFunc = func_list[postfix.ident.value]
         if not thisFunc.ident.value in self.handle_func:
             self.handle_func.append(thisFunc.ident.value)
-            now_temp = 0
-            if thisFunc.parameters is not None:
-                for child in thisFunc.parameters:
-                    child_symbol = child.getattr("symbol")
-                    child_symbol.temp = temp_list[now_temp]
-                    child.setattr("symbol", child_symbol)
-                    now_temp += 1
+            
             if not hasattr(thisFunc.parameters, "children"):
                 fv = self.pw.visitFunc(postfix.ident.value, 0)
             else:
                 fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
-            fv.nextTempId = now_temp
+            # now_temp = 0
+            if thisFunc.parameters is not None:
+                for child in thisFunc.parameters:
+                    child_symbol = child.getattr("symbol")
+                    child_symbol.temp = fv.freshTemp()
+                    child.setattr("symbol", child_symbol)
+                    # now_temp += 1
+            # fv.nextTempId = now_temp
             if thisFunc.parameters is not None:
                 for child in thisFunc.parameters:
                     fv.visitParamDecl(child.getattr("symbol").temp)
@@ -245,6 +246,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         expr.setattr("val", mv.visitUnary(op, expr.operand.getattr("val")))
 
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
+
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
 
@@ -264,6 +266,7 @@ class TACGen(Visitor[FuncVisitor, None]):
             node.BinaryOp.LogicAnd: tacop.BinaryOp.LAND,
             # You can add binary operations here.
         }[expr.op]
+        # print(op, expr.lhs.getattr("val"), expr.rhs.getattr("val"))
         expr.setattr(
             "val", mv.visitBinary(op, expr.lhs.getattr("val"), expr.rhs.getattr("val"))
         )

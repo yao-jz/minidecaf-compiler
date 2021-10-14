@@ -118,11 +118,11 @@ class Riscv:
 
         def __str__(self) -> str:
             if(self.op == "equ"):
-                return "sub " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
                     str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                 ) + "\n\t" + "seqz " + Riscv.FMT2.format(
                     str(self.dsts[0]), str(self.srcs[0])
-                )
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
             elif(self.op == "geq"):
                 return "slt " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
@@ -136,17 +136,17 @@ class Riscv:
                         str(self.dsts[0]), str(self.srcs[0]), "1"
                     )
             elif(self.op == "neq"):
-                return "sub " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                     ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
-                    )
+                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
             elif(self.op == "lor"):
-                return "or " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "or " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                     ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
-                    )
+                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
             elif(self.op == "land"):
                 return "snez " + Riscv.FMT2.format(
                     str(self.srcs[0]), str(self.srcs[0])

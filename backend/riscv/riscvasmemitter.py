@@ -42,6 +42,7 @@ class RiscvAsmEmitter(AsmEmitter):
         )
 
         for instr in func.getInstrSeq():
+            # print(instr)
             instr.accept(selector)
         info = SubroutineInfo(func.entry)
         # sys.exit(0)
