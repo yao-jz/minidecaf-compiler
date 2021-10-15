@@ -47,8 +47,11 @@ class Program(ListNode["Function"]):
     AST root. It should have only one children before step9.
     """
 
-    def __init__(self, *children: Function) -> None:
+    def __init__(self, *children) -> None:
         super().__init__("program", list(children))
+
+    def globals(self) -> dict[str, Declaration]:
+        return {decl.ident.value: decl for decl in self if isinstance(decl, Declaration)}
 
     def functions(self) -> dict[str, Function]:
         return {func.ident.value: func for func in self if isinstance(func, Function)}

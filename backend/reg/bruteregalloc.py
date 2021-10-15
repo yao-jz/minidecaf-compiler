@@ -34,6 +34,7 @@ class BruteRegAlloc(RegAlloc):
         super().__init__(emitter)
         self.bindings = {}
         self.parameter_temp = []
+        self.globalTemp = []
         for reg in emitter.allocatableRegs:
             reg.used = False
 
@@ -112,7 +113,29 @@ class BruteRegAlloc(RegAlloc):
         elif(type(loc.instr) == Riscv.CallAssignment):
             self.storeRegtoStack(loc, subEmitter, srcRegs)
 
+        if(type(loc.instr) == Riscv.Load):
+            self.globalTemp.append({"temp": loc.instr.dsts[0], "offset": loc.instr.offset, "dst": dstRegs[0], "src": srcRegs[0], "symbol": loc.instr.symbol})
+
+            
+
         subEmitter.emitNative(instr.toNative(dstRegs, srcRegs))
+        if(type(loc.instr) == Riscv.Move):
+            for k in self.globalTemp:
+                if(loc.instr.dsts[0].temp == k["temp"]):
+                    subEmitter.emitNative(
+                        Riscv.NativeStoreWord(Riscv.T0, Riscv.SP, 8)
+                    )
+                    subEmitter.emitNative(
+                        Riscv.NativeLoadAddr(Riscv.T0, k["symbol"])
+                    )
+                    subEmitter.emitNative(
+                        Riscv.NativeStoreWord(k["dst"], k["src"], k["offset"])
+                    )
+                    subEmitter.emitNative(
+                        Riscv.NativeLoadWord(Riscv.T0, Riscv.SP, 8)
+                    )
+                    self.globalTemp.remove(k)
+            
 
         if(type(loc.instr) == Riscv.CallAssignment):
             self.loadRegfromStack(loc, subEmitter)

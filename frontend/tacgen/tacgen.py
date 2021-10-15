@@ -10,7 +10,7 @@ from utils.tac.funcvisitor import FuncVisitor
 from utils.tac.programwriter import ProgramWriter
 from utils.tac.tacprog import TACProg
 from utils.tac.temp import Temp
-
+import sys
 """
 The TAC generation phase: translate the abstract syntax tree into three-address code.
 """
@@ -26,7 +26,20 @@ class TACGen(Visitor[FuncVisitor, None]):
     def transform(self, program: Program) -> TACProg:
         self.program = program
         funcs = program.functions()
+        decls = program.globals()
+
         self.pw = ProgramWriter([k for k in funcs.keys()])
+        for globalName in decls.keys():
+            decl = decls[globalName]
+            self.pw.globalVars.append(decl)
+            # print(decl.var_t, decl.ident.value, type(decl.init_expr))
+            # if(type(decl.init_expr)== NullType):
+            #     self.pw.globalVars.append()
+            # elif(type(decl.init_expr)==IntLiteral):
+            #     pass
+            # else:
+            #     print(type(decl.init_expr))
+            #     print("[debug] step into else")
         mainFunc = program.mainFunc()
         # The function visitor of 'main' is special.
         mv = self.pw.visitMainFunc()
@@ -35,6 +48,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         # Remember to call mv.visitEnd after the translation a function.
         mv.visitEnd()
         return self.pw.visitEnd()
+
 
 
     def visitPostfix(self, postfix: Postfix, mv: FuncVisitor) -> None:
@@ -65,7 +79,6 @@ class TACGen(Visitor[FuncVisitor, None]):
                     fv.visitParamDecl(child.getattr("symbol").temp)
             thisFunc.body.accept(self, fv)
             fv.visitEnd()
-            
             mv.nextTempId = fv.nextTempId
         postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
 
@@ -91,7 +104,15 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         1. Set the 'val' attribute of ident as the temp variable of the 'symbol' attribute of ident.
         """
-        
+        for decl in self.pw.globalVars:
+            if(decl.ident.value == ident.value):
+                addrTemp = mv.freshTemp()
+                loadTemp = mv.freshTemp()
+                mv.visitLoadSymbol(addrTemp, ident.value)
+                mv.visitLoadTemp(loadTemp, addrTemp, 0, ident.value)
+                new_symbol = ident.getattr("symbol")
+                new_symbol.temp = loadTemp
+                ident.setattr("symbol", new_symbol)
         ident.setattr("val", ident.getattr("symbol").temp)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
@@ -246,7 +267,6 @@ class TACGen(Visitor[FuncVisitor, None]):
         expr.setattr("val", mv.visitUnary(op, expr.operand.getattr("val")))
 
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
-
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
 

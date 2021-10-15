@@ -176,6 +176,9 @@ class Riscv:
         def __str__(self) -> str:
             return "j " + str(self.target)
 
+
+    
+
     class Param(TACInstr):
         def __init__(self, src: Temp) -> None:
             super().__init__(InstrKind.SEQ, [], [src], None)
@@ -201,6 +204,28 @@ class Riscv:
 
         def __str__(self) -> str:
             return "call " + str(self.target)
+
+    class LoadSymbol(TACInstr):
+        def __init__(self, dst: Temp, symbol: str) -> None:
+            super().__init__(InstrKind.SEQ, [dst], [], None)
+            self.dst = dst
+            self.symbol = symbol
+        
+        def __str__(self) -> str:
+            return "la " + str(self.dsts[0])+ ", " + self.symbol
+
+    
+
+    class Load(TACInstr):
+        def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str = None) -> None:
+            super().__init__(InstrKind.SEQ, [dst], [src], None)
+            self.dst = dst
+            self.src = src
+            self.offset = offset
+            self.symbol = symbol
+
+        def __str__(self) -> str:
+            return "lw " + str(self.dsts[0]) + ", " + str(self.offset) + "(" + str(self.srcs[0]) + ")"
 
     class SPAdd(NativeInstr):
         def __init__(self, offset: int) -> None:
@@ -234,6 +259,15 @@ class Riscv:
             return "lw " + Riscv.FMT_OFFSET.format(
                 str(self.dsts[0]), str(self.offset), str(self.srcs[0])
             )
+    
+    class NativeLoadAddr(NativeInstr):
+        def __init__(self, dst: Reg, symbol: str) -> None:
+            super().__init__(InstrKind.SEQ, [dst], [], None)
+            self.dst = dst
+            self.symbol = symbol
+
+        def __str__(self):
+            return "la " + str(self.dst) + ", " + self.symbol
 
     class NativeReturn(NativeInstr):
         def __init__(self) -> None:

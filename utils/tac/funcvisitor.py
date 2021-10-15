@@ -83,6 +83,12 @@ class FuncVisitor:
 
     def visitBranch(self, target: Label) -> None:
         self.func.add(Branch(target))
+        
+    def visitLoadTemp(self, dst: Temp, src: Temp, offset: int, symbol: str) -> None:
+        self.func.add(Load(dst, src, offset, symbol))
+
+    def visitLoadSymbol(self, dst: Temp, symbol: str) -> None:
+        self.func.add(LoadSymbol(dst, symbol))
 
     def visitCondBranch(self, op: CondBranchOp, cond: Temp, target: Label) -> None:
         self.func.add(CondBranch(op, cond, target))

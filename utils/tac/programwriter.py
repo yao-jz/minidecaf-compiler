@@ -13,6 +13,7 @@ from .tacprog import TACProg
 class ProgramWriter:
     def __init__(self, funcs: list[str]) -> None:
         self.funcs = []
+        self.globalVars = []
         self.ctx = Context()
         for func in funcs:
             self.funcs.append(func)
@@ -27,4 +28,4 @@ class ProgramWriter:
         return FuncVisitor(entry, numArgs, self.ctx)
 
     def visitEnd(self) -> TACProg:
-        return TACProg(self.ctx.funcs)
+        return TACProg(self.ctx.funcs, self.globalVars)

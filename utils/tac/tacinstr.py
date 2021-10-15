@@ -136,6 +136,34 @@ class Binary(TACInstr):
     def accept(self, v: TACVisitor) -> None:
         v.visitBinary(self)
 
+class LoadSymbol(TACInstr):
+    def __init__(self, dst: Temp, symbol: str) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [], None)
+        self.dst = dst
+        # TODO: check the type of symbol (and funcvisitor)
+        self.symbol = symbol
+
+    def __str__(self):
+        return str(self.dst) + " = LOAD_SYMBOL " + str(self.symbol)
+
+    def accept(self, v: TACVisitor) -> None:
+        # TODO
+        v.visitLoadSymbol(self)
+
+class Load(TACInstr):
+    def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [src], None)
+        self.dst = dst
+        self.offset = offset
+        self.src = src
+        self.symbol = symbol
+
+    def __str__(self):
+        return str(self.dst) + " = LOAD " + str(self.src) + ", " + str(self.offset)
+    
+    def accept(self, v: TACVisitor) -> None:
+        # TODO
+        v.visitLoad(self)
 
 class ParamDecl(TACInstr):
     def __init__(self, dst: Temp) -> None:
