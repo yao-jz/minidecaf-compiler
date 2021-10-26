@@ -210,7 +210,6 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
                     Riscv.NativeStoreWord(Riscv.CalleeSaved[i], Riscv.SP, 4 * i)
                 )
         # save RA and FP
-        # TODO: calculate offset for RA and FP
         # if Riscv.RA.isUsed():
         self.printer.printInstr(
             Riscv.NativeStoreWord(Riscv.RA, Riscv.SP, 4 * len(Riscv.CalleeSaved))
@@ -230,7 +229,6 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
 
         # in step9, you need to think about how to pass the parameters here
         # you can use the stack or regs (use stack)
-        # TODO: pass the parameters
         for index in range(len(self.paraReg)):
             self.printer.printInstr(
                 Riscv.NativeLoadWord(self.paraReg[index], Riscv.SP, self.nextLocalOffset + index * 4)

@@ -14,6 +14,7 @@ from frontend.type.type import DecafType
 from utils.error import *
 from utils.riscv import MAX_INT
 from utils.tac.tacinstr import Assign
+import sys
 
 """
 The namer phase: resolve all symbols defined in the abstract syntax tree and store them in symbol tables (i.e. scopes).
@@ -158,6 +159,8 @@ class Namer(Visitor[ScopeStack, None]):
         """
         ok = ctx.findConflict(decl.ident.value)
         if(not ok):
+            # if(type(decl.var_t.type) == ArrayType):
+            #     print(type(decl.var_t.type)._indexes)
             new_symbol = VarSymbol(decl.ident.value, decl.var_t.type)
             decl.setattr("symbol", new_symbol)
             ctx.declare(new_symbol)
@@ -165,6 +168,20 @@ class Namer(Visitor[ScopeStack, None]):
                 decl.init_expr.accept(self, ctx)
         else:
             raise DecafDeclConflictError()
+    
+    def visitIndexExpr(self, indexexpr: IndexExpr, ctx: ScopeStack) -> None:
+        symbol = ctx.lookup(indexexpr.base.value)
+        for index in indexexpr.index:
+            if(index.value < 0):
+                raise DecafBadArraySizeError()
+        if(symbol.type.dim != len(indexexpr.index)):
+            raise DecafTypeMismatchError()
+        if(symbol is not None):
+            indexexpr.setattr("symbol", symbol)
+        else:
+            raise DecafUndefinedVarError()
+        
+
         
 
     def visitAssignment(self, expr: Assignment, ctx: ScopeStack) -> None:

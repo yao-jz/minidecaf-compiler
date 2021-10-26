@@ -279,7 +279,7 @@ class Postfix(Statement):
         return 2
 
     def accept(self, v: Visitor[T, U], ctx: T):
-        return v.visitPostfix(self, ctx)    # TODO: support
+        return v.visitPostfix(self, ctx)    
 
 class ExpressionList(ListNode["Expression"]):
     """
@@ -292,7 +292,7 @@ class ExpressionList(ListNode["Expression"]):
         return len(self.children)
 
     def accept(self, v: Visitor[T, U], ctx: T):
-        return v.visitExpressionList(self, ctx) # TODO: support
+        return v.visitExpressionList(self, ctx) 
 
 class Parameter(ListNode["Declaration"]):
     """
@@ -358,7 +358,28 @@ class Expression(Node):
         super().__init__(name)
         self.type: Optional[DecafType] = None
 
+class IndexExpr(Expression):
+    """
+    AST node of an index expression.
+    """
+    def __init__(self, base: Identifier) -> None:
+        super().__init__("IndexExpr")
+        self.base = base
+        self.index = []
 
+    def __getitem__(self, key: int) -> Node:
+        return (self.base, self.index)[key]
+
+    def __len__(self) -> int:
+        return 2
+
+    def accept(self, v: Visitor[T, U], ctx: T):
+        # TODO
+        return v.visitIndexExpr(self, ctx)
+
+    
+
+    
 class Unary(Expression):
     """
     AST node of unary expression.
@@ -540,3 +561,24 @@ class TInt(TypeLiteral):
 
     def accept(self, v: Visitor[T, U], ctx: T):
         return v.visitTInt(self, ctx)
+
+class TArray(TypeLiteral):
+    "AST node of type `int array`."
+
+    def __init__(self, _type: DecafType) -> None:
+        super().__init__("type_array", _type)
+
+    def __getitem__(self, key: int) -> Node:
+        raise _index_len_err(key, self)
+
+    def __len__(self) -> int:
+        return 0
+
+    def accept(self, v: Visitor[T, U], ctx: T):
+        return v.visitTArray(self, ctx)
+
+        
+
+class Dimension():
+    def __init__(self):
+        self.dims = []

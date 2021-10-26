@@ -147,7 +147,6 @@ class LoadSymbol(TACInstr):
         return str(self.dst) + " = LOAD_SYMBOL " + str(self.symbol)
 
     def accept(self, v: TACVisitor) -> None:
-        # TODO
         v.visitLoadSymbol(self)
 
 class Load(TACInstr):
@@ -162,7 +161,6 @@ class Load(TACInstr):
         return str(self.dst) + " = LOAD " + str(self.src) + ", " + str(self.offset)
     
     def accept(self, v: TACVisitor) -> None:
-        # TODO
         v.visitLoad(self)
 
 class ParamDecl(TACInstr):

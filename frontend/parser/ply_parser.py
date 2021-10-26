@@ -15,6 +15,7 @@ import ply.yacc as yacc
 
 from frontend.ast.tree import *
 from frontend.lexer import lex
+from frontend.type.array import ArrayType
 from utils.error import DecafSyntaxError
 
 tokens = lex.tokens
@@ -37,8 +38,6 @@ def p_empty(p: yacc.YaccProduction):
     empty :
     """
     pass
-
-
 
 def p_program(p):
     """
@@ -285,6 +284,41 @@ def p_declaration(p):
     """
     p[0] = Declaration(p[1], p[2])
 
+def p_declaration_array(p):
+    """
+    declaration : type Identifier dimension
+    """
+    if(len(p[3].dims) == 0):
+        p[0] = Declaration(p[1], p[2])
+    else:
+        dim_list = []
+        for i in p[3].dims:
+            dim_list.append(i.value)
+        dim_list.reverse()
+        if(len(dim_list) == 1):
+            p[0] = Declaration(TArray(ArrayType(INT, dim_list[0])), p[2])
+        else:
+            length = 1
+            for d in dim_list:
+                length *= d
+            T = ArrayType(INT, dim_list[0])
+            for i in range(1, len(dim_list)):
+                T = ArrayType(T, dim_list[i])
+            p[0] = Declaration(TArray(T), p[2])
+    
+def p_dimension(p):
+    """
+    dimension : dimension LSB Integer RSB
+    """
+    if p[3] is not NULL:
+        p[1].dims.append(p[3])
+    p[0] = p[1]
+
+def p_dimension_empty(p):
+    """
+    dimension : empty
+    """
+    p[0] = Dimension()
 
 def p_declaration_init(p):
     """
@@ -308,6 +342,7 @@ def p_expression_precedence(p):
     additive : multiplicative
     multiplicative : unary
     unary : postfix
+    unary : indexexpr
     postfix : primary
     """
     p[0] = p[1]
@@ -317,6 +352,29 @@ def p_postfix(p):
     postfix : Identifier LParen expression_list RParen
     """
     p[0] = Postfix(p[1], p[3])
+
+# def p_postfix_array(p):
+#     """
+#     postfix : indexexpr LSB expression RSB
+#     """
+#     if(p[3] is not NULL):
+#         p[1].index.append(p[3])
+#     p[0] = p[1]
+    
+
+def p_indexexpr(p):
+    """
+    indexexpr : indexexpr LSB expression RSB
+    """
+    if(p[3] is not NULL):
+        p[1].index.append(p[3])
+    p[0] = p[1]
+
+def p_indexexpr_empty(p):
+    """
+    indexexpr : Identifier
+    """
+    p[0] = IndexExpr(p[1])
 
 def p_expression_list(p):
     """
@@ -356,6 +414,7 @@ def p_unary_expression(p):
 def p_binary_expression(p):
     """
     assignment : Identifier Assign expression
+    assignment : indexexpr Assign expression
     logical_or : logical_or Or logical_and
     logical_and : logical_and And bit_or
     bit_or : bit_or BitOr xor

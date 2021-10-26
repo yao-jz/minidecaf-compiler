@@ -24,5 +24,5 @@ class BuiltinType(DecafType):
     def __str__(self) -> str:
         return self.name
 
-
 INT = BuiltinType("int")
+
