@@ -171,10 +171,11 @@ class Namer(Visitor[ScopeStack, None]):
     
     def visitIndexExpr(self, indexexpr: IndexExpr, ctx: ScopeStack) -> None:
         symbol = ctx.lookup(indexexpr.base.value)
+
         for index in indexexpr.index:
             if(index.value < 0):
                 raise DecafBadArraySizeError()
-        if(symbol.type.dim != len(indexexpr.index)):
+        if(symbol.type != INT and symbol.type.dim != len(indexexpr.index)):
             raise DecafTypeMismatchError()
         if(symbol is not None):
             indexexpr.setattr("symbol", symbol)
@@ -195,6 +196,7 @@ class Namer(Visitor[ScopeStack, None]):
         expr.operand.accept(self, ctx)
 
     def visitBinary(self, expr: Binary, ctx: ScopeStack) -> None:
+        print(expr)
         expr.lhs.accept(self, ctx)
         expr.rhs.accept(self, ctx)
 

@@ -362,16 +362,15 @@ class IndexExpr(Expression):
     """
     AST node of an index expression.
     """
-    def __init__(self, base: Identifier) -> None:
+    def __init__(self) -> None:
         super().__init__("IndexExpr")
-        self.base = base
         self.index = []
 
     def __getitem__(self, key: int) -> Node:
-        return (self.base, self.index)[key]
+        return (self.index)[key]
 
     def __len__(self) -> int:
-        return 2
+        return 1
 
     def accept(self, v: Visitor[T, U], ctx: T):
         # TODO
@@ -567,6 +566,7 @@ class TArray(TypeLiteral):
 
     def __init__(self, _type: DecafType) -> None:
         super().__init__("type_array", _type)
+        self.type = _type
 
     def __getitem__(self, key: int) -> Node:
         raise _index_len_err(key, self)

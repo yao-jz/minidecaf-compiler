@@ -80,6 +80,18 @@ class LoadImm4(TACInstr):
     def accept(self, v: TACVisitor) -> None:
         v.visitLoadImm4(self)
 
+class Alloc(TACInstr):
+    def __init__(self, dst: Temp, cnt: int) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [], None)
+        self.dst = dst
+        self.cnt = cnt
+    
+    def __str__(self) -> str:
+        return "%s = ALLOC %d" % (self.dst, self.cnt)
+    
+    def accept(self, v: TACVisitor) -> None:
+        v.visitAlloc(self)
+
 
 # Unary operations.
 class Unary(TACInstr):
@@ -163,6 +175,20 @@ class Load(TACInstr):
     def accept(self, v: TACVisitor) -> None:
         v.visitLoad(self)
 
+class Store(TACInstr):
+    def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [src], None)
+        self.dst = dst
+        self.src = src
+        self.offset = offset
+        self.symbol = symbol
+    
+    def __str__(self):
+        return "STORE " + str(self.dst) + ", " + str(self.offset) + " " + str(self.src)
+
+    def accept(self, v: TACVisitor) -> None:
+        v.visitStore(self)
+    
 class ParamDecl(TACInstr):
     def __init__(self, dst: Temp) -> None:
         super().__init__(InstrKind.SEQ, [dst], [], None)

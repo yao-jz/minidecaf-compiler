@@ -15,6 +15,23 @@ import sys
 The TAC generation phase: translate the abstract syntax tree into three-address code.
 """
 
+def get_offset(array_type, index_list):
+    type_index_list = []
+    while True:
+        type_index_list.append(array_type.length)
+        array_type = array_type.base
+        if array_type == INT:
+            break
+    offset = 0
+    for i in range(len(index_list)):
+        temp = i + 1
+        temp_result = 1
+        while temp < len(index_list):
+            temp_result *= type_index_list[temp]
+            temp += 1
+        offset += temp_result * index_list[i].value
+    offset *= 4
+    return offset
 
 class TACGen(Visitor[FuncVisitor, None]):
     def __init__(self) -> None:
@@ -27,7 +44,6 @@ class TACGen(Visitor[FuncVisitor, None]):
         self.program = program
         funcs = program.functions()
         decls = program.globals()
-
         self.pw = ProgramWriter([k for k in funcs.keys()])
         for globalName in decls.keys():
             decl = decls[globalName]
@@ -115,6 +131,8 @@ class TACGen(Visitor[FuncVisitor, None]):
                 new_symbol = ident.getattr("symbol")
                 new_symbol.temp = loadTemp
                 ident.setattr("symbol", new_symbol)
+        
+        print(ident.value, ident.getattr("symbol"))
         ident.setattr("val", ident.getattr("symbol").temp)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
@@ -135,7 +153,10 @@ class TACGen(Visitor[FuncVisitor, None]):
             decl.setattr("symbol", symbol)
             mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         elif(type(decl.init_expr) == NullType):
-            symbol.temp = mv.visitLoad(0)
+            if(type(decl.var_t) == TArray):
+                symbol.temp = mv.visitAlloc(decl.var_t.type.size)
+            else:
+                symbol.temp = mv.visitLoad(0)
             decl.setattr("symbol", symbol)
         elif(type(decl.init_expr) == Assignment):
             decl.init_expr.accept(self, mv)
@@ -153,6 +174,11 @@ class TACGen(Visitor[FuncVisitor, None]):
             decl.setattr("symbol", symbol)
             mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         elif(type(decl.init_expr) == Postfix):
+            decl.init_expr.accept(self, mv)
+            symbol.temp = mv.freshTemp()
+            decl.setattr("symbol", symbol)
+            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
+        elif(type(decl.init_expr) == IndexExpr):
             decl.init_expr.accept(self, mv)
             symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)
@@ -178,7 +204,21 @@ class TACGen(Visitor[FuncVisitor, None]):
             symbol.temp = mv.freshTemp()
             expr.lhs.setattr("symbol", symbol)
             left_temp = expr.lhs.getattr("symbol").temp
-        expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
+        if type(expr.lhs) == IndexExpr:
+            offset = get_offset(expr.lhs.getattr("symbol").type, expr.lhs.index)
+            expr.setattr("val", mv.visitStore(left_temp, expr.rhs.getattr("val"), offset, expr.lhs.base.value))
+        else:
+            expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
+
+    def visitIndexExpr(self, expr: IndexExpr, mv: FuncVisitor) -> None:
+        # for decl in self.pw.globarVars:
+        #     if decl.ident.value == expr.base.value:
+        #         addrTemp = mv.freshTemp()
+        offset = get_offset(expr.getattr("symbol").type, expr.index)
+        addrTemp = expr.getattr("symbol").temp
+        loadTemp = mv.freshTemp()
+        mv.visitLoadTemp(loadTemp, addrTemp, offset, expr.base.value)
+        expr.setattr("val", loadTemp)
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
         stmt.cond.accept(self, mv)
@@ -269,6 +309,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         expr.setattr("val", mv.visitUnary(op, expr.operand.getattr("val")))
 
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
+        print(expr)
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
 
