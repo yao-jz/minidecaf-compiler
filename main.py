@@ -76,7 +76,7 @@ def main():
     def _tac():
         tac = step_tac(_parse())
         #print("\nGenerated TAC:\n")
-        #tac.printTo()
+        # tac.printTo()
         return tac
 
     def _asm():

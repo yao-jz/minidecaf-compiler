@@ -39,6 +39,7 @@ class DecafBadIntValueError(Exception):
         super().__init__("Semantic error: bad integer value " + str(val))
 
 
+
 class DecafUndefinedVarError(Exception):
     def __init__(self, name: str) -> None:
         super().__init__("Semantic error: undefined variable '%s'" % name)

@@ -210,6 +210,8 @@ class Namer(Visitor[ScopeStack, None]):
         """
         1. Refer to the implementation of visitBinary.
         """
+        if (type(expr.lhs) == IntLiteral):
+            raise DecafBadAssignTypeError()
         expr.lhs.accept(self, ctx)
         expr.rhs.accept(self, ctx)
 

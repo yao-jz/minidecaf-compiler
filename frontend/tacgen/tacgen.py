@@ -142,7 +142,9 @@ class TACGen(Visitor[FuncVisitor, None]):
                     )
                 )
             loadTemp = mv.freshTemp()
-            mv.visitLoadArray(loadTemp, postfix.ident.getattr("symbol").temp, offset, postfix.ident.value)
+            addrTemp = mv.freshTemp()
+            mv.visitAssignment(addrTemp, mv.visitBinary(tacop.BinaryOp.ADD, offset, postfix.ident.getattr("symbol").temp))
+            mv.visitLoadTemp(loadTemp, addrTemp, 0, postfix.ident.value)
             new_symbol = copy.deepcopy(postfix.ident.getattr("symbol"))
             new_symbol.temp = loadTemp
             postfix.setattr("offset", offset)
@@ -251,11 +253,14 @@ class TACGen(Visitor[FuncVisitor, None]):
                 symbol.temp = mv.freshTemp()
                 expr.lhs.setattr("symbol", symbol)
                 left_temp = expr.lhs.getattr("symbol").temp
+            expr.lhs.accept(self, mv)
             expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
         elif type(expr.lhs) == Postfix:
             expr.lhs.accept(self, mv)
-            left_temp = expr.lhs.getattr("val")
-            expr.setattr("val", mv.visitStoreArray(expr.lhs.ident.getattr("symbol").temp, expr.rhs.getattr("val"), expr.lhs.getattr("offset"), expr.lhs.ident))
+            left_temp = expr.lhs.ident.getattr("symbol").temp
+            addrTemp = mv.freshTemp()
+            mv.visitAssignment(addrTemp, mv.visitBinary(tacop.BinaryOp.ADD, expr.lhs.getattr("offset"), left_temp))
+            expr.setattr("val", mv.visitStore(addrTemp, expr.rhs.getattr("val"), 0, expr.lhs.ident.value))
         
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
