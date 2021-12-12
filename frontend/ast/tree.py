@@ -267,10 +267,12 @@ class Postfix(Statement):
     """
     AST node of postfix. (yjz)
     """
-    def __init__(self, ident: Identifier, exprList: ExpressionList):
+    def __init__(self, ident: Identifier, exprList: ExpressionList, isArray=False):
         super().__init__("postfix")
         self.ident = ident
         self.exprList = exprList
+        self.isArray = isArray
+        self.arrayType = None
 
     def __getitem__(self, key: int) -> Node:
         return (self.ident, self.exprList)[key]

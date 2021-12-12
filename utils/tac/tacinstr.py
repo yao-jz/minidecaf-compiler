@@ -174,20 +174,28 @@ class Load(TACInstr):
     
     def accept(self, v: TACVisitor) -> None:
         v.visitLoad(self)
-
-class Store(TACInstr):
-    def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str) -> None:
+class LoadArray(TACInstr):
+    def __init__(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
         super().__init__(InstrKind.SEQ, [dst], [src], None)
         self.dst = dst
         self.src = src
         self.offset = offset
         self.symbol = symbol
-    
     def __str__(self):
-        return "STORE " + str(self.dst) + ", " + str(self.offset) + " " + str(self.src)
-
+        return str(self.dst) + " = LOAD " + str(self.src) + ", " + str(self.offset)
     def accept(self, v: TACVisitor) -> None:
-        v.visitStore(self)
+        v.visitLoadArray(self)
+class StoreArray(TACInstr):
+    def __init__(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
+        super().__init__(InstrKind.SEQ, [dst], [src], None)
+        self.dst = dst
+        self.src = src
+        self.offset = offset
+        self.symbol = symbol
+    def __str__(self):
+        return "STORE " + str(self.dst) + ", " + str(self.src) + ", " + str(self.offset)
+    def accept(self, v: TACVisitor) -> None:
+        v.visitStoreArray(self)
     
 class ParamDecl(TACInstr):
     def __init__(self, dst: Temp) -> None:

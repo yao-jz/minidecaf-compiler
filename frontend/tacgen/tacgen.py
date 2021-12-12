@@ -1,3 +1,4 @@
+import copy
 import utils.riscv as riscv
 from frontend.ast import node
 from frontend.ast.tree import *
@@ -14,6 +15,14 @@ import sys
 """
 The TAC generation phase: translate the abstract syntax tree into three-address code.
 """
+def get_index(t):
+    index = []
+    while True:
+        index.append(t.length)
+        t = t.base
+        if t == INT:
+            break
+    return index
 
 def get_offset(array_type, index_list):
     type_index_list = []
@@ -68,35 +77,77 @@ class TACGen(Visitor[FuncVisitor, None]):
 
 
     def visitPostfix(self, postfix: Postfix, mv: FuncVisitor) -> None:
-        for child in postfix.exprList:
-            child.accept(self, mv)
-            mv.visitParam(child.getattr("val"))
-        temp_list = [child.getattr("val") for child in postfix.exprList.children]
-        func_list = self.program.functions()
-        
-        thisFunc = func_list[postfix.ident.value]
-        if not thisFunc.ident.value in self.handle_func:
-            self.handle_func.append(thisFunc.ident.value)
-            
-            if not hasattr(thisFunc.parameters, "children"):
-                fv = self.pw.visitFunc(postfix.ident.value, 0)
-            else:
-                fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
-            # now_temp = 0
-            if thisFunc.parameters is not None:
-                for child in thisFunc.parameters:
-                    child_symbol = child.getattr("symbol")
-                    child_symbol.temp = fv.freshTemp()
-                    child.setattr("symbol", child_symbol)
-                    # now_temp += 1
-            # fv.nextTempId = now_temp
-            if thisFunc.parameters is not None:
-                for child in thisFunc.parameters:
-                    fv.visitParamDecl(child.getattr("symbol").temp)
-            thisFunc.body.accept(self, fv)
-            fv.visitEnd()
-            mv.nextTempId = fv.nextTempId
-        postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
+        if postfix.isArray is False:
+            for child in postfix.exprList:
+                child.accept(self, mv)
+                mv.visitParam(child.getattr("val"))
+            temp_list = [child.getattr("val") for child in postfix.exprList.children]
+            func_list = self.program.functions()
+            thisFunc = func_list[postfix.ident.value]
+            if not thisFunc.ident.value in self.handle_func:
+                self.handle_func.append(thisFunc.ident.value)
+                
+                if not hasattr(thisFunc.parameters, "children"):
+                    fv = self.pw.visitFunc(postfix.ident.value, 0)
+                else:
+                    fv = self.pw.visitFunc(postfix.ident.value, len(thisFunc.parameters.children))
+                # now_temp = 0
+                if thisFunc.parameters is not None:
+                    for child in thisFunc.parameters:
+                        child_symbol = child.getattr("symbol")
+                        child_symbol.temp = fv.freshTemp()
+                        child.setattr("symbol", child_symbol)
+                        # now_temp += 1
+                # fv.nextTempId = now_temp
+                if thisFunc.parameters is not None:
+                    for child in thisFunc.parameters:
+                        fv.visitParamDecl(child.getattr("symbol").temp)
+                thisFunc.body.accept(self, fv)
+                fv.visitEnd()
+                mv.nextTempId = fv.nextTempId
+            postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
+        else:
+            for decl in self.pw.globalVars:
+                if decl.ident.value == postfix.ident.value:
+                    addrTemp = mv.freshTemp()
+                    loadTemp = mv.freshTemp()
+                    mv.visitLoadSymbol(addrTemp, postfix.ident.value)
+                    mv.visitLoadTemp(loadTemp, addrTemp, 0, postfix.ident.value)
+                    new_symbol = postfix.ident.getattr("symbol")
+                    new_symbol.temp = loadTemp
+                    postfix.ident.setattr("symbol", new_symbol)
+            for child in postfix.exprList:
+                child.accept(self, mv)
+            temp_list = [child.getattr("val") for child in postfix.exprList.children]
+            offset = mv.visitLoad(0)
+            index_list = get_index(postfix.arrayType)
+            mul_list = []
+            for i in range(1, len(index_list)):
+                tempresult = 1
+                for j in range(i, len(index_list)):
+                    tempresult *= index_list[j]
+                mul_list.append(mv.visitLoad(tempresult))
+            mul_list.append(mv.visitLoad(1))
+            for i in range(len(temp_list)):
+                mv.visitAssignment(
+                    offset, 
+                    mv.visitBinary(
+                        tacop.BinaryOp.ADD, 
+                        offset, 
+                        mv.visitBinary(
+                            tacop.BinaryOp.MUL,
+                            temp_list[i],
+                            mul_list[i]
+                        )
+                    )
+                )
+            loadTemp = mv.freshTemp()
+            mv.visitLoadArray(loadTemp, postfix.ident.getattr("symbol").temp, offset, postfix.ident.value)
+            new_symbol = copy.deepcopy(postfix.ident.getattr("symbol"))
+            new_symbol.temp = loadTemp
+            postfix.setattr("offset", offset)
+            postfix.setattr("val", new_symbol.temp)
+            postfix.setattr("symbol", new_symbol)
 
 
 
@@ -131,8 +182,7 @@ class TACGen(Visitor[FuncVisitor, None]):
                 new_symbol = ident.getattr("symbol")
                 new_symbol.temp = loadTemp
                 ident.setattr("symbol", new_symbol)
-        
-        print(ident.value, ident.getattr("symbol"))
+
         ident.setattr("val", ident.getattr("symbol").temp)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
@@ -178,14 +228,10 @@ class TACGen(Visitor[FuncVisitor, None]):
             symbol.temp = mv.freshTemp()
             decl.setattr("symbol", symbol)
             mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
-        elif(type(decl.init_expr) == IndexExpr):
-            decl.init_expr.accept(self, mv)
-            symbol.temp = mv.freshTemp()
-            decl.setattr("symbol", symbol)
-            mv.visitAssignment(symbol.temp, decl.init_expr.getattr("val"))
         else:
             print(type(decl.init_expr))
             print("[debug] step into else")
+            raise ValueError("")
         
 
 
@@ -197,28 +243,20 @@ class TACGen(Visitor[FuncVisitor, None]):
         3. Set the 'val' attribute of expr as the value of assignment instruction.
         """
         expr.rhs.accept(self, mv)
-        if(hasattr(expr.lhs.getattr("symbol"),"temp")):
-            left_temp = expr.lhs.getattr("symbol").temp
-        else:
-            symbol = expr.lhs.getattr("symbol")
-            symbol.temp = mv.freshTemp()
-            expr.lhs.setattr("symbol", symbol)
-            left_temp = expr.lhs.getattr("symbol").temp
-        if type(expr.lhs) == IndexExpr:
-            offset = get_offset(expr.lhs.getattr("symbol").type, expr.lhs.index)
-            expr.setattr("val", mv.visitStore(left_temp, expr.rhs.getattr("val"), offset, expr.lhs.base.value))
-        else:
+        if type(expr.lhs) == Identifier:
+            if(hasattr(expr.lhs.getattr("symbol"),"temp")):
+                left_temp = expr.lhs.getattr("symbol").temp
+            else:
+                symbol = expr.lhs.getattr("symbol")
+                symbol.temp = mv.freshTemp()
+                expr.lhs.setattr("symbol", symbol)
+                left_temp = expr.lhs.getattr("symbol").temp
             expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
-
-    def visitIndexExpr(self, expr: IndexExpr, mv: FuncVisitor) -> None:
-        # for decl in self.pw.globarVars:
-        #     if decl.ident.value == expr.base.value:
-        #         addrTemp = mv.freshTemp()
-        offset = get_offset(expr.getattr("symbol").type, expr.index)
-        addrTemp = expr.getattr("symbol").temp
-        loadTemp = mv.freshTemp()
-        mv.visitLoadTemp(loadTemp, addrTemp, offset, expr.base.value)
-        expr.setattr("val", loadTemp)
+        elif type(expr.lhs) == Postfix:
+            expr.lhs.accept(self, mv)
+            left_temp = expr.lhs.getattr("val")
+            expr.setattr("val", mv.visitStoreArray(expr.lhs.ident.getattr("symbol").temp, expr.rhs.getattr("val"), expr.lhs.getattr("offset"), expr.lhs.ident))
+        
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
         stmt.cond.accept(self, mv)
@@ -309,7 +347,6 @@ class TACGen(Visitor[FuncVisitor, None]):
         expr.setattr("val", mv.visitUnary(op, expr.operand.getattr("val")))
 
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
-        print(expr)
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
 

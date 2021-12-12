@@ -374,26 +374,11 @@ def p_postfix_array(p):
     postfix : postfix LSB expression RSB
     """
     if type(p[1]) == Identifier:
-        p[0] = Postfix(p[1], ExpressionList(p[3]))
+        p[0] = Postfix(p[1], ExpressionList(p[3]), True)
     else:
         if p[3] is not NULL:
-            p[1].exprList.append(p[3])
+            p[1].exprList.children.append(p[3])
         p[0] = p[1]
-    
-
-# def p_indexexpr(p):
-#     """
-#     indexexpr : indexexpr LSB expression RSB
-#     """
-#     if(p[3] is not NULL):
-#         p[1].index.append(p[3])
-#     p[0] = p[1]
-
-# def p_indexexpr_empty(p):
-#     """
-#     indexexpr : empty
-#     """
-#     p[0] = IndexExpr()
 
 def p_expression_list(p):
     """

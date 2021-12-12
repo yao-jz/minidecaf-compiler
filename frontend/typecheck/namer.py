@@ -20,6 +20,15 @@ import sys
 The namer phase: resolve all symbols defined in the abstract syntax tree and store them in symbol tables (i.e. scopes).
 """
 
+def get_index(t):
+    index = []
+    while True:
+        index.append(t.length)
+        t = t.base
+        if t == INT:
+            break
+    return index
+
 
 class Namer(Visitor[ScopeStack, None]):
     def __init__(self) -> None:
@@ -61,17 +70,29 @@ class Namer(Visitor[ScopeStack, None]):
             child.accept(self, ctx)
 
     def visitPostfix(self, postfix: Postfix, ctx: ScopeStack) -> None:
-        func = ctx.lookup(postfix.ident.value)
-        if(func is None):   # no function identifier found
-            raise DecafBadFuncCallError()
-        # check the num and type of parameters
-        if postfix.exprList.getNumChildren() == len(func.para_type):
-            pass    # TODO: check the type of the parameters
+        if postfix.isArray == False:
+            func = ctx.lookup(postfix.ident.value)
+            if(func is None):   # no function identifier found
+                raise DecafBadFuncCallError()
+            # check the num and type of parameters
+            if postfix.exprList.getNumChildren() == len(func.para_type):
+                pass    # TODO: check the type of the parameters
+            else:
+                raise DecafBadFuncCallError()
+            
+            postfix.ident.accept(self, ctx)
+            postfix.exprList.accept(self, ctx)
         else:
-            raise DecafBadFuncCallError()
-        
-        postfix.ident.accept(self, ctx)
-        postfix.exprList.accept(self, ctx)
+            postfix.ident.accept(self, ctx)
+            postfix.exprList.accept(self, ctx)
+            ident = ctx.lookup(postfix.ident.value)
+            if(ident is None):
+                raise DecafBadFuncCallError()
+            postfix.arrayType = ident.type
+            if (len(get_index(ident.type)) == postfix.exprList.getNumChildren()):
+                pass
+            else:
+                raise DecafBadArraySizeError()
 
     def visitExpressionList(self, exprList: ExpressionList, ctx: ScopeStack) -> None:
         for child in exprList:
@@ -196,7 +217,6 @@ class Namer(Visitor[ScopeStack, None]):
         expr.operand.accept(self, ctx)
 
     def visitBinary(self, expr: Binary, ctx: ScopeStack) -> None:
-        print(expr)
         expr.lhs.accept(self, ctx)
         expr.rhs.accept(self, ctx)
 
