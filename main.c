@@ -1,5 +1,7 @@
-int main() {
-    int a[1];
-    a[0] = 1;
-    return 1;
+int state = 1;
+int main()
+{
+    state = 3;
+    state = 4;
+    return state;
 }

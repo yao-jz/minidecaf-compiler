@@ -1,10 +1,10 @@
 import random
-
+import copy
 from backend.dataflow.basicblock import BasicBlock, BlockKind
 from backend.dataflow.cfg import CFG
 from backend.dataflow.loc import Loc
 from backend.reg.regalloc import RegAlloc
-from backend.riscv.riscvasmemitter import RiscvAsmEmitter
+from backend.riscv.riscvasmemitter import RiscvAsmEmitter, RiscvSubroutineEmitter
 from backend.subroutineemitter import SubroutineEmitter
 from backend.subroutineinfo import SubroutineInfo
 from utils.riscv import Riscv
@@ -38,11 +38,10 @@ class BruteRegAlloc(RegAlloc):
         for reg in emitter.allocatableRegs:
             reg.used = False
 
-    def accept(self, graph: CFG, info: SubroutineInfo, numArgs = 0) -> None:
+    def accept(self, graph: CFG, info: SubroutineInfo, numArgs = 0, sp_offset=0) -> None:
         
-        subEmitter = self.emitter.emitSubroutine(info, numArgs)
+        subEmitter = self.emitter.emitSubroutine(info, numArgs, sp_offset)
 
-        
         can_be_visited = [0]
         for bb in graph.iterator():
             if(not bb.id in can_be_visited):
@@ -76,7 +75,11 @@ class BruteRegAlloc(RegAlloc):
         # in step9, you may need to think about how to store callersave regs here
         for loc in bb.allSeq():
             subEmitter.emitComment(str(loc.instr))
-            
+            if (type(loc.instr) == Riscv.SPAdd):
+                temp_sp_offset = abs(loc.instr.offset)
+                subEmitter.now_sp_offset += temp_sp_offset
+                for i in subEmitter.offsets.keys():
+                    subEmitter.offsets[i] += temp_sp_offset
             self.allocForLoc(loc, subEmitter)
 
         for tempindex in bb.liveOut:
@@ -87,6 +90,7 @@ class BruteRegAlloc(RegAlloc):
             self.allocForLoc(bb.locs[len(bb.locs) - 1], subEmitter)
 
     def allocForLoc(self, loc: Loc, subEmitter: SubroutineEmitter):
+        # print("Begin")
         instr = loc.instr
         srcRegs: list[Reg] = []
         dstRegs: list[Reg] = []
@@ -113,32 +117,38 @@ class BruteRegAlloc(RegAlloc):
         elif(type(loc.instr) == Riscv.CallAssignment):
             self.storeRegtoStack(loc, subEmitter, srcRegs)
 
+        # temp = None
         if(type(loc.instr) == Riscv.Load):
-            self.globalTemp.append({"temp": loc.instr.dsts[0], "offset": loc.instr.offset, "dst": dstRegs[0], "src": srcRegs[0], "symbol": loc.instr.symbol})
+            self.globalTemp.append({"temp": loc.instr.dst, "offset": loc.instr.offset, "dst": dstRegs[0], "src": srcRegs[0], "symbol": loc.instr.symbol})
 
-            
+        # if(type(loc.instr) == Riscv.Move):
+        #     temp = copy.deepcopy(loc.instr.dst)
+            # print(loc.instr, temp)
 
         subEmitter.emitNative(instr.toNative(dstRegs, srcRegs))
-        if(type(loc.instr) == Riscv.Move):
-            for k in self.globalTemp:
-                if(loc.instr.dsts[0].temp == k["temp"]):
-                    subEmitter.emitNative(
-                        Riscv.NativeStoreWord(Riscv.T0, Riscv.SP, 8)
-                    )
-                    subEmitter.emitNative(
-                        Riscv.NativeLoadAddr(Riscv.T0, k["symbol"])
-                    )
-                    subEmitter.emitNative(
-                        Riscv.NativeStoreWord(k["dst"], k["src"], k["offset"])
-                    )
-                    subEmitter.emitNative(
-                        Riscv.NativeLoadWord(Riscv.T0, Riscv.SP, 8)
-                    )
-                    self.globalTemp.remove(k)
+        # if(type(loc.instr) == Riscv.Move):
+        #     print("here", temp)
+        #     for k in self.globalTemp:
+        #         print(k)
+        #         if(temp == k["temp"]):
+        #             subEmitter.emitNative(
+        #                 Riscv.NativeStoreWord(Riscv.T0, Riscv.SP, 8)
+        #             )
+        #             subEmitter.emitNative(
+        #                 Riscv.NativeLoadAddr(Riscv.T0, k["symbol"])
+        #             )
+        #             subEmitter.emitNative(
+        #                 Riscv.NativeStoreWord(k["dst"], k["src"], k["offset"])
+        #             )
+        #             subEmitter.emitNative(
+        #                 Riscv.NativeLoadWord(Riscv.T0, Riscv.SP, 8)
+        #             )
+        #             self.globalTemp.remove(k)
             
 
         if(type(loc.instr) == Riscv.CallAssignment):
             self.loadRegfromStack(loc, subEmitter)
+        # print("end")
 
 
     def storeRegtoStack(self, loc, subEmitter, regs):

@@ -178,11 +178,15 @@ class Namer(Visitor[ScopeStack, None]):
         3. Set the 'symbol' attribute of decl.
         4. If there is an initial value, visit it.
         """
+        
         ok = ctx.findConflict(decl.ident.value)
         if(not ok):
             # if(type(decl.var_t.type) == ArrayType):
             #     print(type(decl.var_t.type)._indexes)
-            new_symbol = VarSymbol(decl.ident.value, decl.var_t.type)
+            isGlobal = False
+            if ctx.stack[-1] == ctx.globalscope:
+	            isGlobal = True
+            new_symbol = VarSymbol(decl.ident.value, decl.var_t.type, isGlobal)
             decl.setattr("symbol", new_symbol)
             ctx.declare(new_symbol)
             if(decl.init_expr):

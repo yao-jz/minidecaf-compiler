@@ -112,9 +112,9 @@ class TACGen(Visitor[FuncVisitor, None]):
                     addrTemp = mv.freshTemp()
                     loadTemp = mv.freshTemp()
                     mv.visitLoadSymbol(addrTemp, postfix.ident.value)
-                    mv.visitLoadTemp(loadTemp, addrTemp, 0, postfix.ident.value)
+                    # mv.visitLoadTemp(loadTemp, addrTemp, 0, postfix.ident.value)
                     new_symbol = postfix.ident.getattr("symbol")
-                    new_symbol.temp = loadTemp
+                    new_symbol.temp = addrTemp
                     postfix.ident.setattr("symbol", new_symbol)
             for child in postfix.exprList:
                 child.accept(self, mv)
@@ -123,11 +123,11 @@ class TACGen(Visitor[FuncVisitor, None]):
             index_list = get_index(postfix.arrayType)
             mul_list = []
             for i in range(1, len(index_list)):
-                tempresult = 1
+                tempresult = 4
                 for j in range(i, len(index_list)):
                     tempresult *= index_list[j]
                 mul_list.append(mv.visitLoad(tempresult))
-            mul_list.append(mv.visitLoad(1))
+            mul_list.append(mv.visitLoad(4))
             for i in range(len(temp_list)):
                 mv.visitAssignment(
                     offset, 
@@ -175,8 +175,14 @@ class TACGen(Visitor[FuncVisitor, None]):
         """
         1. Set the 'val' attribute of ident as the temp variable of the 'symbol' attribute of ident.
         """
+        isGlobal = False
+        if (ident.getattr("symbol").isGlobal == False):
+            ident.setattr("val", ident.getattr("symbol").temp)
+            ident.setattr("isGlobal", isGlobal)
+            return
         for decl in self.pw.globalVars:
             if(decl.ident.value == ident.value):
+                isGlobal = True
                 addrTemp = mv.freshTemp()
                 loadTemp = mv.freshTemp()
                 mv.visitLoadSymbol(addrTemp, ident.value)
@@ -184,8 +190,10 @@ class TACGen(Visitor[FuncVisitor, None]):
                 new_symbol = ident.getattr("symbol")
                 new_symbol.temp = loadTemp
                 ident.setattr("symbol", new_symbol)
+                ident.setattr("addrTemp", addrTemp)
 
         ident.setattr("val", ident.getattr("symbol").temp)
+        # ident.setattr("isGlobal", isGlobal)
 
     def visitDeclaration(self, decl: Declaration, mv: FuncVisitor) -> None:
         """
@@ -254,7 +262,10 @@ class TACGen(Visitor[FuncVisitor, None]):
                 expr.lhs.setattr("symbol", symbol)
                 left_temp = expr.lhs.getattr("symbol").temp
             expr.lhs.accept(self, mv)
-            expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
+            if expr.lhs.getattr("symbol").isGlobal == True:
+                expr.setattr("val", mv.visitStore(expr.lhs.getattr("addrTemp"), expr.rhs.getattr("val"), 0, expr.lhs.value))
+            else:
+                expr.setattr("val", mv.visitAssignment(left_temp, expr.rhs.getattr("val")))
         elif type(expr.lhs) == Postfix:
             expr.lhs.accept(self, mv)
             left_temp = expr.lhs.ident.getattr("symbol").temp

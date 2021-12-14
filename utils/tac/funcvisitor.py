@@ -70,9 +70,8 @@ class FuncVisitor:
         self.func.add(StoreArray(dst, src, offset, symbol))
 
     def visitStore(self, dst: Temp, src: Temp, offset: int, symbol: str) -> Temp:
-        temp = self.freshTemp()
         self.func.add(Store(dst, src, offset, symbol))
-        return temp
+        return src
 
     def visitAlloc(self, cnt: int) -> Temp:
         temp = self.freshTemp()

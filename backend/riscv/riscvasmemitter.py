@@ -28,6 +28,7 @@ class RiscvAsmEmitter(AsmEmitter):
     ) -> None:
         super().__init__(allocatableRegs, callerSaveRegs)
         self.globalVars = golbalVars
+        self.sp_offset = 0
         bssVars = []
         dataVars = []
         for decl in self.globalVars:
@@ -40,9 +41,10 @@ class RiscvAsmEmitter(AsmEmitter):
         if(len(bssVars) > 0):
             self.printer.println(".bss")
             for d in bssVars:
+                # print(d.var_t.type.size)
                 self.printer.println(".global " + str(d.ident.value))
                 self.printer.println(d.ident.value + ":")
-                self.printer.println("    " + ".space 4")
+                self.printer.println("    " + ".space " + str(d.var_t.type.size))
         if(len(dataVars)> 0):
             self.printer.println(".data")
             for d in dataVars:
@@ -64,15 +66,16 @@ class RiscvAsmEmitter(AsmEmitter):
         )
 
         for instr in func.getInstrSeq():
-            # print(instr)
+            if (type(instr) == Alloc):
+                self.sp_offset += instr.cnt
             instr.accept(selector)
         info = SubroutineInfo(func.entry)
         # sys.exit(0)
-        return (selector.seq, info)
+        return (selector.seq, info, self.sp_offset)
 
     # use info to construct a RiscvSubroutineEmitter
-    def emitSubroutine(self, info: SubroutineInfo, numArgs: int):
-        return RiscvSubroutineEmitter(self, info, numArgs)
+    def emitSubroutine(self, info: SubroutineInfo, numArgs: int, sp_offset):
+        return RiscvSubroutineEmitter(self, info, numArgs, sp_offset)
 
     # return all the string stored in asmcodeprinter
     def emitEnd(self):
@@ -132,6 +135,12 @@ class RiscvAsmEmitter(AsmEmitter):
         def visitLoadSymbol(self, instr: LoadSymbol) -> None:
             self.seq.append(Riscv.LoadSymbol(instr.dst, instr.symbol))
 
+        def visitAlloc(self, instr: Alloc) -> None:
+            self.seq.append(Riscv.SPAdd(-instr.cnt))
+            self.seq.append(Riscv.Move(instr.dst, Riscv.SP))
+
+        def visitStore(self, instr: Store) -> None:
+            self.seq.append(Riscv.Store(instr.dst, instr.src, instr.offset, instr.symbol))
         
 
         # in step9, you need to think about how to pass the parameters and how to store and restore callerSave regs
@@ -141,9 +150,9 @@ RiscvAsmEmitter: an SubroutineEmitter for RiscV
 """
 
 class RiscvSubroutineEmitter(SubroutineEmitter):
-    def __init__(self, emitter: RiscvAsmEmitter, info: SubroutineInfo, numArgs: int) -> None:
+    def __init__(self, emitter: RiscvAsmEmitter, info: SubroutineInfo, numArgs: int, sp_offset: int = 0) -> None:
         super().__init__(emitter, info)
-        
+        self.sp_offset = sp_offset
         self.numArgs = numArgs
         # + 8 is for the RA reg and BP reg and 4 * numArgs is for parameters
         self.nextLocalOffset = 4 * len(Riscv.CalleeSaved) + 8 + 4 * numArgs
@@ -153,7 +162,10 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
 
         # from temp to int
         # record where a temp is stored in the stack
+
+        # 同时更新offsets, now_sp_offset
         self.offsets = {}
+        self.now_sp_offset = 0
         self.paraReg = []
 
         self.printer.printLabel(info.funcLabel)
@@ -172,9 +184,11 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
     # usually happen when reaching the end of a basicblock
     # in step9, you need to think about the function parameters here
     def emitStoreToStack(self, src: Reg) -> None:
+        # print("eeee")
         if src.temp.index not in self.offsets:
-            self.offsets[src.temp.index] = self.nextLocalOffset
+            self.offsets[src.temp.index] = self.nextLocalOffset + self.now_sp_offset
             self.nextLocalOffset += 4
+        # print(self.offsets[src.temp.index])
         self.buf.append(
             Riscv.NativeStoreWord(src, Riscv.SP, self.offsets[src.temp.index])
         )
@@ -247,6 +261,9 @@ class RiscvSubroutineEmitter(SubroutineEmitter):
             Label(LabelKind.TEMP, self.info.funcLabel.name + Riscv.EPILOGUE_SUFFIX)
         )
         self.printer.printComment("start of epilogue")
+        self.printer.printInstr(
+            Riscv.SPAdd(self.sp_offset)
+        )
 
         for i in range(len(Riscv.CalleeSaved)):
             if Riscv.CalleeSaved[i].isUsed():

@@ -31,7 +31,7 @@ class Asm:
             builder = CFGBuilder(func_list)
             cfg: CFG = builder.buildFrom(pair[0])
             analyzer.accept(cfg)
-            self.regAlloc.accept(cfg, pair[1], func.numArgs)
+            self.regAlloc.accept(cfg, pair[1], func.numArgs, pair[2])
         # for func in prog.funcs:
         #     # 然后弄其他函数
         #     if(func.entry.name == "main"):

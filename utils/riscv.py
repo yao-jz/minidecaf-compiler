@@ -97,6 +97,8 @@ class Riscv:
     class Move(TACInstr):
         def __init__(self, dst: Temp, src: Temp) -> None:
             super().__init__(InstrKind.SEQ, [dst], [src], None)
+            self.dst = dst
+            self.src = src
 
         def __str__(self) -> str:
             return "mv " + Riscv.FMT2.format(str(self.dsts[0]), str(self.srcs[0]))
@@ -118,11 +120,11 @@ class Riscv:
 
         def __str__(self) -> str:
             if(self.op == "equ"):
-                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
                     str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                 ) + "\n\t" + "seqz " + Riscv.FMT2.format(
                     str(self.dsts[0]), str(self.srcs[0])
-                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "geq"):
                 return "slt " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
@@ -136,17 +138,17 @@ class Riscv:
                         str(self.dsts[0]), str(self.srcs[0]), "1"
                     )
             elif(self.op == "neq"):
-                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                     ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
-                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
+                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "lor"):
-                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))  + "\n\t" + "or " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))  + "\n\t" + "or " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                     ) + "\n\t" + "snez " + Riscv.FMT2.format(
                         str(self.dsts[0]), str(self.srcs[0])
-                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(4), str(Riscv.SP))
+                    ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "land"):
                 return "snez " + Riscv.FMT2.format(
                     str(self.srcs[0]), str(self.srcs[0])
@@ -227,6 +229,16 @@ class Riscv:
         def __str__(self) -> str:
             return "lw " + str(self.dsts[0]) + ", " + str(self.offset) + "(" + str(self.srcs[0]) + ")"
 
+    class Store(TACInstr):
+        def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str = None) -> None:
+            super().__init__(InstrKind.SEQ, [dst], [src], None)
+            self.dst = dst
+            self.src = src
+            self.offset = offset
+            self.symbol = symbol
+        def __str__(self) -> str:
+            return "sw " + str(self.srcs[0]) + ", " + str(self.offset) + "(" + str(self.dsts[0]) + ")"
+
     class SPAdd(NativeInstr):
         def __init__(self, offset: int) -> None:
             super().__init__(InstrKind.SEQ, [Riscv.SP], [Riscv.SP], None)
@@ -237,6 +249,8 @@ class Riscv:
             return "addi " + Riscv.FMT3.format(
                 str(Riscv.SP), str(Riscv.SP), str(self.offset)
             )
+        def toNative(self, dsts = None, srcs = None):
+            return self
 
     class NativeStoreWord(NativeInstr):
         def __init__(self, src: Reg, base: Reg, offset: int) -> None:
