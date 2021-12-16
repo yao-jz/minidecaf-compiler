@@ -120,23 +120,26 @@ class Riscv:
 
         def __str__(self) -> str:
             if(self.op == "equ"):
-                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP)
+                ) + "\n\t" + "sub " + Riscv.FMT3.format(
                     str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
                 ) + "\n\t" + "seqz " + Riscv.FMT2.format(
                     str(self.dsts[0]), str(self.srcs[0])
                 ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "geq"):
-                return "slt " + Riscv.FMT3.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP)
+                ) + "\n\t" + "slt " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n\t" + "xori " + Riscv.FMT3.format(
-                        str(self.dsts[0]), str(self.srcs[0]), "1"
-                    )
+                ) + "\n\t" + "xori " + Riscv.FMT3.format(
+                    str(self.dsts[0]), str(self.srcs[0]), "1"
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "leq"):
-                return "sgt " + Riscv.FMT3.format(
-                        str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
-                    ) + "\n\t" + "xori " + Riscv.FMT3.format(
-                        str(self.dsts[0]), str(self.srcs[0]), "1"
-                    )
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP)
+                ) + "\n\t" + "sgt " + Riscv.FMT3.format(
+                    str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
+                ) + "\n\t" + "xori " + Riscv.FMT3.format(
+                    str(self.dsts[0]), str(self.srcs[0]), "1"
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "neq"):
                 return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))  + "\n\t" + "sub " + Riscv.FMT3.format(
                         str(self.srcs[0]), str(self.srcs[0]), str(self.srcs[1])
@@ -150,13 +153,16 @@ class Riscv:
                         str(self.dsts[0]), str(self.srcs[0])
                     ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP))
             elif(self.op == "land"):
-                return "snez " + Riscv.FMT2.format(
+                return "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP)
+                ) + "\n\t" + "sw "+ Riscv.FMT_OFFSET.format(str(self.srcs[1]), str(-8), str(Riscv.SP)
+                ) + "\n\t" + "snez " + Riscv.FMT2.format(
                     str(self.srcs[0]), str(self.srcs[0])
                 ) + "\n\t" + "snez " + Riscv.FMT2.format(
                     str(self.srcs[1]), str(self.srcs[1])
                 ) + "\n\t" + "and " + Riscv.FMT3.format(
                     str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])
-                )
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[0]), str(-4), str(Riscv.SP)
+                ) + "\n\t" + "lw " + Riscv.FMT_OFFSET.format(str(self.srcs[1]), str(-8), str(Riscv.SP))
             else:
                 return "{} ".format(self.op) + Riscv.FMT3.format(
                     str(self.dsts[0]), str(self.srcs[0]), str(self.srcs[1])

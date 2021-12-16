@@ -48,8 +48,10 @@ main:
 _L1:
     lw t0, 60(sp)   # i
     lw t1, 52(sp)   # n
-    sgt t0, t0, t1
+    sw t0, -4(sp)
+        sgt t0, t0, t1
         xori t2, t0, 1
+        lw t0, -4(sp)
     sw t1, 52(sp)   # n
     sw t0, 60(sp)   # i
     beq x0, t2, _L3
@@ -59,8 +61,10 @@ _L1:
 _L4:
     lw t0, 64(sp)   # j
     lw t1, 60(sp)   # i
-    sgt t0, t0, t1
+    sw t0, -4(sp)
+        sgt t0, t0, t1
         xori t2, t0, 1
+        lw t0, -4(sp)
     sw t1, 60(sp)   # i
     sw t0, 64(sp)   # j
     beq x0, t2, _L6
@@ -131,8 +135,8 @@ _L8:    # 1
     lw t4, 0(t5)    # t5 = C[1 - b][j]的地址
     add t4, t1, t0
     mv t0, t4       # t0 = C[1 - b][j]的地址
-    lw t0, 68(sp)   # 要加载的数据，1或者是表达式，不该加载到t0上
-    sw t0, 0(t1)
+    lw t1, 68(sp)   # 要加载的数据，1或者是表达式，不该加载到t0上
+    sw t1, 0(t0)
     sw t2, 56(sp)   # b
     sw t3, 64(sp)   # j
 _L5:
@@ -140,7 +144,7 @@ _L5:
     lw t1, 64(sp)
     add t2, t1, t0
     mv t1, t2
-    sw t1, 64(sp)
+    sw t1, 64(sp)   # j
     j _L4
 _L6:
     li t0, 1

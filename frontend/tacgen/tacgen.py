@@ -55,7 +55,7 @@ class TACGen(Visitor[FuncVisitor, None]):
         for i in funcs.keys():
             if funcs[i].parameters is not None:
                 for p in funcs[i].parameters:
-                    if type(p.var_t.type == ArrayType):
+                    if type(p.var_t.type == ArrayType) and p.var_t.type.size > 4:
                         raise ValueError("type error")
         decls = program.globals()
         self.pw = ProgramWriter([k for k in funcs.keys()])
@@ -284,8 +284,12 @@ class TACGen(Visitor[FuncVisitor, None]):
             addrTemp = mv.freshTemp()
             mv.visitAssignment(addrTemp, mv.visitBinary(tacop.BinaryOp.ADD, expr.lhs.getattr("offset"), left_temp))
             expr.setattr("val", mv.visitStore(addrTemp, expr.rhs.getattr("val"), 0, expr.lhs.ident.value))
-        if type(expr.rhs.getattr("symbol").type)==ArrayType or type(expr.lhs.getattr("symbol").type) == ArrayType:
-            raise ValueError("error")
+        if expr.rhs.getattr("symbol") is not None:
+            if type(expr.rhs.getattr("symbol").type)==ArrayType or type(expr.lhs.getattr("symbol").type) == ArrayType:
+                if type(expr.rhs) == Postfix or type(expr.lhs) == Postfix:
+                    pass
+                else:
+                    raise ValueError("error")
         
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
@@ -367,8 +371,9 @@ class TACGen(Visitor[FuncVisitor, None]):
 
     def visitUnary(self, expr: Unary, mv: FuncVisitor) -> None:
         expr.operand.accept(self, mv)
-        if type(expr.operand.getattr("symbol").type) == ArrayType:
-            raise TypeError("error")
+        if expr.operand.getattr("symbol") is not None:
+            if type(expr.operand.getattr("symbol").type) == ArrayType:
+                raise TypeError("error")
         op = {
             node.UnaryOp.Neg: tacop.UnaryOp.NEG,
             node.UnaryOp.Not: tacop.UnaryOp.NOT,
@@ -380,8 +385,13 @@ class TACGen(Visitor[FuncVisitor, None]):
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
-        if (type(expr.lhs.getattr("symbol").type)==ArrayType) or (type(expr.rhs.getattr("symbol").type)==ArrayType):
-            raise ValueError("type error")
+
+        if expr.lhs.getattr("symbol") is not None:
+            if (type(expr.lhs.getattr("symbol").type)==ArrayType):
+                if type(expr.lhs) == Postfix:
+                    pass
+                else:
+                    raise ValueError("type error")
 
         op = {
             node.BinaryOp.Add: tacop.BinaryOp.ADD,
