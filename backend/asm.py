@@ -4,6 +4,7 @@ from backend.dataflow.livenessanalyzer import LivenessAnalyzer
 from backend.reg.bruteregalloc import BruteRegAlloc
 from backend.riscv.riscvasmemitter import RiscvAsmEmitter
 from utils.tac.tacprog import TACProg
+import sys
 
 """
 Asm: we use it to generate all the asm code for the program

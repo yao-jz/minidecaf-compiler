@@ -105,7 +105,10 @@ class TACGen(Visitor[FuncVisitor, None]):
                 thisFunc.body.accept(self, fv)
                 fv.visitEnd()
                 mv.nextTempId = fv.nextTempId
-            postfix.setattr("val", mv.visitCallAssignment(postfix.ident.value))
+            # mv.visitBeforeCall()
+            call_temp = mv.visitCallAssignment(postfix.ident.value)
+            # mv.visitAfterCall()
+            postfix.setattr("val", call_temp)
         else:
             for decl in self.pw.globalVars:
                 if decl.ident.value == postfix.ident.value:
@@ -143,7 +146,9 @@ class TACGen(Visitor[FuncVisitor, None]):
                 )
             loadTemp = mv.freshTemp()
             addrTemp = mv.freshTemp()
+
             mv.visitAssignment(addrTemp, mv.visitBinary(tacop.BinaryOp.ADD, offset, postfix.ident.getattr("symbol").temp))
+            
             mv.visitLoadTemp(loadTemp, addrTemp, 0, postfix.ident.value)
             new_symbol = copy.deepcopy(postfix.ident.getattr("symbol"))
             new_symbol.temp = loadTemp

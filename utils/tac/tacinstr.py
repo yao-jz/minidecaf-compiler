@@ -102,10 +102,12 @@ class Unary(TACInstr):
         self.operand = operand
 
     def __str__(self) -> str:
+        # print(self.op)
         opStr = {
             UnaryOp.NEG: "-",
             UnaryOp.LOGICNOT: "~",
             UnaryOp.NOT: "!",
+            UnaryOp.SEQZ: "seqz", 
         }[self.op]
         return "%s = %s %s" % (
             self.dst,
@@ -177,7 +179,7 @@ class Load(TACInstr):
 
 class Store(TACInstr):
     def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str) -> None:
-        super().__init__(InstrKind.SEQ, [dst], [src], None)
+        super().__init__(InstrKind.SEQ, [], [dst,src], None)
         self.dst = dst
         self.offset = offset
         self.src = src
@@ -188,30 +190,7 @@ class Store(TACInstr):
     
     def accept(self, v: TACVisitor) -> None:
         v.visitStore(self)
-        
-class LoadArray(TACInstr):
-    def __init__(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
-        super().__init__(InstrKind.SEQ, [dst], [src], None)
-        self.dst = dst
-        self.src = src
-        self.offset = offset
-        self.symbol = symbol
-    def __str__(self):
-        return str(self.dst) + " = LOAD " + str(self.src) + ", " + str(self.offset)
-    def accept(self, v: TACVisitor) -> None:
-        v.visitLoadArray(self)
-class StoreArray(TACInstr):
-    def __init__(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
-        super().__init__(InstrKind.SEQ, [dst], [src], None)
-        self.dst = dst
-        self.src = src
-        self.offset = offset
-        self.symbol = symbol
-    def __str__(self):
-        return "STORE " + str(self.dst) + ", " + str(self.src) + ", " + str(self.offset)
-    def accept(self, v: TACVisitor) -> None:
-        v.visitStoreArray(self)
-    
+
 class ParamDecl(TACInstr):
     def __init__(self, dst: Temp) -> None:
         super().__init__(InstrKind.SEQ, [dst], [], None)
@@ -245,17 +224,31 @@ class Call(TACInstr):
     def accept(self, v: TACVisitor) -> None:
         v.visitCall(self)
 
+class BeforeCall(TACInstr):
+    def __init__(self) -> None:
+        super().__init__(InstrKind.SEQ, [], [], None)
+    def __str__(self) -> str:
+        return ""
+    def accept(self, v:TACVisitor) -> None:
+        v.visitBeforeCall(self)
+
 class CallAssignment(TACInstr):
     def __init__(self, target: Label, dst: Temp) -> None:
         super().__init__(InstrKind.JMP, [dst], [], target)
         self.target = target
         self.dst = dst
-
     def __str__(self) -> str:
         return str(self.dst) + " = " + "CALL " + str(self.target)
-
     def accept(self, v: TACVisitor) -> None:
         v.visitCallAssignment(self)
+
+class AfterCall(TACInstr):
+    def __init__(self) -> None:
+        super().__init__(InstrKind.SEQ, [], [], None)
+    def __str__(self) -> str:
+        return ""
+    def accept(self, v:TACVisitor) -> None:
+        v.visitAfterCall(self)
 
 # Branching instruction.
 class Branch(TACInstr):

@@ -114,12 +114,18 @@ class RiscvAsmEmitter(AsmEmitter):
             self.seq.append(Riscv.Jump(instr.target))
 
         def visitAssign(self, instr: Assign) -> None:
-
             self.seq.append(Riscv.Move(instr.dst, instr.src))
 
         def visitCallAssignment(self, instr: CallAssignment) -> None:
             self.seq.append(Riscv.CallAssignment(instr.dst, instr.target, self.paratemp))
-            self.seq.append(Riscv.Move(instr.dst, Riscv.A0))
+            # self.seq.append(Riscv.Move(instr.dst, Riscv.A0))
+            self.seq.append(Riscv.Load(instr.dst, Riscv.SP, -88))
+            self.paratemp = []
+
+        def visitBeforeCall(self, instr: BeforeCall) -> None:
+            self.seq.append(Riscv.BeforeCall(self.paratemp))
+        def visitAfterCall(self, instr: AfterCall) -> None:
+            self.seq.append(Riscv.AfterCall(self.paratemp))
             self.paratemp = []
             
         def visitParam(self, instr: Param) -> None:

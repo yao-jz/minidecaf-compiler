@@ -66,6 +66,7 @@ class BruteRegAlloc(RegAlloc):
     def unbind(self, temp: Temp):
         if temp.index in self.bindings:
             self.bindings[temp.index].occupied = False
+            # self.bindings[temp.index].used = False
             self.bindings.pop(temp.index)
 
     def localAlloc(self, bb: BasicBlock, subEmitter: SubroutineEmitter):
@@ -92,8 +93,10 @@ class BruteRegAlloc(RegAlloc):
     def allocForLoc(self, loc: Loc, subEmitter: SubroutineEmitter):
         # print("Begin")
         instr = loc.instr
+        # print(type(instr))
         srcRegs: list[Reg] = []
         dstRegs: list[Reg] = []
+
         for i in range(len(instr.srcs)):
             temp = instr.srcs[i]
             if isinstance(temp, Reg):
@@ -117,43 +120,22 @@ class BruteRegAlloc(RegAlloc):
         elif(type(loc.instr) == Riscv.CallAssignment):
             self.storeRegtoStack(loc, subEmitter, srcRegs)
 
+
+
         # temp = None
         if(type(loc.instr) == Riscv.Load):
             self.globalTemp.append({"temp": loc.instr.dst, "offset": loc.instr.offset, "dst": dstRegs[0], "src": srcRegs[0], "symbol": loc.instr.symbol})
-
-        # if(type(loc.instr) == Riscv.Move):
-        #     temp = copy.deepcopy(loc.instr.dst)
-            # print(loc.instr, temp)
-
         subEmitter.emitNative(instr.toNative(dstRegs, srcRegs))
-        # if(type(loc.instr) == Riscv.Move):
-        #     print("here", temp)
-        #     for k in self.globalTemp:
-        #         print(k)
-        #         if(temp == k["temp"]):
-        #             subEmitter.emitNative(
-        #                 Riscv.NativeStoreWord(Riscv.T0, Riscv.SP, 8)
-        #             )
-        #             subEmitter.emitNative(
-        #                 Riscv.NativeLoadAddr(Riscv.T0, k["symbol"])
-        #             )
-        #             subEmitter.emitNative(
-        #                 Riscv.NativeStoreWord(k["dst"], k["src"], k["offset"])
-        #             )
-        #             subEmitter.emitNative(
-        #                 Riscv.NativeLoadWord(Riscv.T0, Riscv.SP, 8)
-        #             )
-        #             self.globalTemp.remove(k)
-            
-
+        if(type(loc.instr) == Riscv.CallAssignment):
+            subEmitter.emitNative(Riscv.NativeStoreWord(Riscv.A0, Riscv.SP, 0))
         if(type(loc.instr) == Riscv.CallAssignment):
             self.loadRegfromStack(loc, subEmitter)
-        # print("end")
 
 
     def storeRegtoStack(self, loc, subEmitter, regs):
         numArgs = len(loc.instr.paratemp)
-        subEmitter.emitNative(Riscv.SPAdd(-(len(Riscv.CallerSaved) * 4 + 8 + 4 * numArgs)))
+        # subEmitter.emitNative(Riscv.SPAdd(-(len(Riscv.CallerSaved) * 4 + 8 + 4 * numArgs)))
+        subEmitter.emitNative(Riscv.SPAdd(-88))
         for i in range(len(Riscv.CallerSaved)):
             if Riscv.CallerSaved[i].isUsed():
                 subEmitter.emitNative(
@@ -171,9 +153,7 @@ class BruteRegAlloc(RegAlloc):
             subEmitter.emitNative(
                 Riscv.NativeStoreWord(regs[i], Riscv.SP, i * 4)
             )
-
-        
-    
+ 
     def loadRegfromStack(self, loc, subEmitter):
         numArgs = len(loc.instr.paratemp)
         
@@ -190,8 +170,8 @@ class BruteRegAlloc(RegAlloc):
         subEmitter.emitNative(
             Riscv.NativeLoadWord(Riscv.FP, Riscv.SP, 4 * numArgs + 4)
         )
-        subEmitter.emitNative(Riscv.SPAdd(len(Riscv.CallerSaved) * 4 + 8 + 4 * numArgs))
-
+        # subEmitter.emitNative(Riscv.SPAdd(len(Riscv.CallerSaved) * 4 + 8 + 4 * numArgs))
+        subEmitter.emitNative(Riscv.SPAdd(88))
 
     def allocRegFor(
         self, temp: Temp, isRead: bool, live: set[int], subEmitter: SubroutineEmitter
@@ -201,7 +181,9 @@ class BruteRegAlloc(RegAlloc):
         # for i in self.emitter.allocatableRegs:
         #     print(i.name, i.occupied, end=" ")
         # print("")
+        # print(live)
         for reg in self.emitter.allocatableRegs:
+
             if (not reg.occupied) or (not reg.temp.index in live):
                 subEmitter.emitComment(
                     "  allocate {} to {}  (read: {}):".format(

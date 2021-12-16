@@ -196,7 +196,12 @@ class Riscv:
 
         def __str__(self) -> str:
             return ""
-
+    class BeforeCall(TACInstr):
+        def __init__(self, paratemp: list[Temp] = []) -> None:
+            super().__init__(InstrKind.SEQ, [], [], None)
+            self.paratemp = paratemp
+        def __str__(self) -> str:
+            return ""
     class CallAssignment(TACInstr):
         def __init__(self, dst: Temp, target: Label, paratemp: list[Temp] = []) -> None:
             super().__init__(InstrKind.JMP, [dst], paratemp, target)
@@ -206,7 +211,13 @@ class Riscv:
 
         def __str__(self) -> str:
             return "call " + str(self.target)
-
+    class AfterCall(TACInstr):
+        def __init__(self, paratemp : list[Temp] = []) -> None:
+            super().__init__(InstrKind.SEQ, [], [], None)
+            self.paratemp = paratemp
+            print("after call", len(paratemp))
+        def __str__(self) -> str:
+            return ""
     class LoadSymbol(TACInstr):
         def __init__(self, dst: Temp, symbol: str) -> None:
             super().__init__(InstrKind.SEQ, [dst], [], None)
@@ -231,13 +242,13 @@ class Riscv:
 
     class Store(TACInstr):
         def __init__(self, dst: Temp, src: Temp, offset: int, symbol: str = None) -> None:
-            super().__init__(InstrKind.SEQ, [dst], [src], None)
+            super().__init__(InstrKind.SEQ, [], [src,dst], None)
             self.dst = dst
             self.src = src
             self.offset = offset
             self.symbol = symbol
         def __str__(self) -> str:
-            return "sw " + str(self.srcs[0]) + ", " + str(self.offset) + "(" + str(self.dsts[0]) + ")"
+            return "sw " + str(self.srcs[0]) + ", " + str(self.offset) + "(" + str(self.srcs[1]) + ")"
 
     class SPAdd(NativeInstr):
         def __init__(self, offset: int) -> None:
@@ -251,6 +262,7 @@ class Riscv:
             )
         def toNative(self, dsts = None, srcs = None):
             return self
+
 
     class NativeStoreWord(NativeInstr):
         def __init__(self, src: Reg, base: Reg, offset: int) -> None:
@@ -273,6 +285,8 @@ class Riscv:
             return "lw " + Riscv.FMT_OFFSET.format(
                 str(self.dsts[0]), str(self.offset), str(self.srcs[0])
             )
+        def toNative(self, dst=None, src=None, offset=None):
+            return self
     
     class NativeLoadAddr(NativeInstr):
         def __init__(self, dst: Reg, symbol: str) -> None:

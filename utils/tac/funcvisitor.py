@@ -46,11 +46,14 @@ class FuncVisitor:
         temp = self.freshTemp()
         self.func.add(Call(target))
         return temp
-
+    def visitBeforeCall(self) -> None:
+        self.func.add(BeforeCall())
     def visitCallAssignment(self, target: Label) -> None:
         temp = self.freshTemp()
         self.func.add(CallAssignment(target, temp))
         return temp
+    def visitAfterCall(self) -> None:
+        self.func.add(AfterCall())
 
     # In fact, the following methods can be named 'appendXXX' rather than 'visitXXX'. E.g., by calling 'visitAssignment', you add an assignment instruction at the end of current function.
     def visitAssignment(self, dst: Temp, src: Temp) -> Temp:
@@ -64,10 +67,6 @@ class FuncVisitor:
         else:
             self.func.add(LoadStrConst(temp, value))
         return temp
-    def visitLoadArray(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
-        self.func.add(LoadArray(dst, src, offset, symbol))
-    def visitStoreArray(self, dst: Temp, src: Temp, offset: Temp, symbol: str) -> None:
-        self.func.add(StoreArray(dst, src, offset, symbol))
 
     def visitStore(self, dst: Temp, src: Temp, offset: int, symbol: str) -> Temp:
         self.func.add(Store(dst, src, offset, symbol))

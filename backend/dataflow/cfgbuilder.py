@@ -2,7 +2,7 @@ from backend.dataflow.basicblock import BasicBlock, BlockKind
 from backend.dataflow.loc import Loc
 from utils.error import IllegalArgumentException, NullPointerException
 from utils.tac.tacinstr import InstrKind, TACInstr
-
+import sys
 from .cfg import CFG
 
 """
@@ -79,7 +79,6 @@ class CFGBuilder:
         self.bbs.append(bb)
         self.buf.clear()
         self.currentBBLabel = None
-        # print("bb.id = ",bb.id, "#########################################")
         # for i in bb.locs:
         #     print(i.instr)
         if bb.label is not None:
