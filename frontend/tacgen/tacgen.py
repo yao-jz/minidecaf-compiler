@@ -52,6 +52,11 @@ class TACGen(Visitor[FuncVisitor, None]):
     def transform(self, program: Program) -> TACProg:
         self.program = program
         funcs = program.functions()
+        for i in funcs.keys():
+            if funcs[i].parameters is not None:
+                for p in funcs[i].parameters:
+                    if type(p.var_t.type == ArrayType):
+                        raise ValueError("type error")
         decls = program.globals()
         self.pw = ProgramWriter([k for k in funcs.keys()])
         for globalName in decls.keys():
@@ -220,6 +225,8 @@ class TACGen(Visitor[FuncVisitor, None]):
         elif(type(decl.init_expr) == NullType):
             if(type(decl.var_t) == TArray):
                 symbol.temp = mv.visitAlloc(decl.var_t.type.size)
+                if decl.var_t.type.size == 0:
+                    raise ValueError("error")
             else:
                 symbol.temp = mv.visitLoad(0)
             decl.setattr("symbol", symbol)
@@ -277,6 +284,8 @@ class TACGen(Visitor[FuncVisitor, None]):
             addrTemp = mv.freshTemp()
             mv.visitAssignment(addrTemp, mv.visitBinary(tacop.BinaryOp.ADD, expr.lhs.getattr("offset"), left_temp))
             expr.setattr("val", mv.visitStore(addrTemp, expr.rhs.getattr("val"), 0, expr.lhs.ident.value))
+        if type(expr.rhs.getattr("symbol").type)==ArrayType or type(expr.lhs.getattr("symbol").type) == ArrayType:
+            raise ValueError("error")
         
 
     def visitIf(self, stmt: If, mv: FuncVisitor) -> None:
@@ -358,7 +367,8 @@ class TACGen(Visitor[FuncVisitor, None]):
 
     def visitUnary(self, expr: Unary, mv: FuncVisitor) -> None:
         expr.operand.accept(self, mv)
-
+        if type(expr.operand.getattr("symbol").type) == ArrayType:
+            raise TypeError("error")
         op = {
             node.UnaryOp.Neg: tacop.UnaryOp.NEG,
             node.UnaryOp.Not: tacop.UnaryOp.NOT,
@@ -370,6 +380,8 @@ class TACGen(Visitor[FuncVisitor, None]):
     def visitBinary(self, expr: Binary, mv: FuncVisitor) -> None:
         expr.lhs.accept(self, mv)
         expr.rhs.accept(self, mv)
+        if (type(expr.lhs.getattr("symbol").type)==ArrayType) or (type(expr.rhs.getattr("symbol").type)==ArrayType):
+            raise ValueError("type error")
 
         op = {
             node.BinaryOp.Add: tacop.BinaryOp.ADD,
